@@ -1,5 +1,9 @@
 import logo from './logo.svg';
 import './App.css';
+import Header from './components/Header';
+import Form from './components/Form';
+import Questions from './components/Questions';
+
 
 function App() {
   return (
