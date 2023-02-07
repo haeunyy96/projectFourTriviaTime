@@ -1,10 +1,16 @@
 import UserChoice from "./UserChoice";
+import { useState } from "react";
 
-const Form = () => {
-    const [userSelection, setUserSelection] = useState(null)
+const Form = ({formInput, submitHandler}) => {
+    const [userSelection, setUserSelection] = useState('')
 
     const handleChange = (event) => {
         setUserSelection(event.target.value);
+        // console.log(event.target.value)
+    }
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
     }
     return (
         <>
@@ -19,9 +25,9 @@ const Form = () => {
                     <option value="5">5 players</option>
                     <option value="6">6 players</option>
                 </select>
-                <input type="submit">Give me photos!</input>
+                <input type="submit"/>
             </form>
-            <UserChoice numberOfPlayers={userSelection}/>
+            <UserChoice numberOfPlayers={userSelection} formInput={formInput} submitHandler={submitHandler}/>
         </>
     )
 }
