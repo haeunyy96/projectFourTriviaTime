@@ -24,14 +24,20 @@ function App() {
     }
 
     //api call to open trivia api
-    useEffect(()=> {
-        fetch('https://opentdb.com/api.php?amount=10')
-            .then(res => res.json())
-            .then((response) => {
-
-            setTriviaQuestions(response.results)
+    useEffect(() => {
+        const url = new URL('https://opentdb.com/api.php')
+        url.search = new URLSearchParams({
+            amount: 3,
+            category: 10
         })
-    },[])
+        fetch(url)
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                setTriviaQuestions(data)
+            })
+    }, [])
 
     //get value of text input for player name and save to state
     const handleChange = (event) => {
