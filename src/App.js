@@ -1,81 +1,76 @@
-import logo from './logo.svg';
-import './App.css';
-import Header from './components/Header';
-import Form from './components/Form';
-import Questions from './components/Questions';
 import { useState, useEffect } from 'react';
 import firebase from './components/firebase';
-import { onValue, ref, getDatabase, push } from 'firebase/database'
+import { onValue, ref, getDatabase, remove, push } from 'firebase/database'
 
+import Form from './components/Form';
 
 function App() {
+    
+    const [ players, setPlayers ] = useState([]); // initializing state to house an array of players
+    const [ nameInput, setNameInput ] = useState(''); // initializing state to keep track of the input section
 
-    //init state for trivia questions
-    const [triviaQuestions, setTriviaQuestions] = useState('')
+    // side effect that runs on component mount -> any updates to the db will be listened for via firebase onValue module
+        // store db and create ref to it
+        // use onValue to listen for changes within the db and on page load -> whenever changes occur save the players currently within db in state
+    useEffect( () => { 
+        const database = getDatabase(firebase);
+        const dbRef = ref(database);
 
-    console.log(triviaQuestions);
+        onValue(dbRef, (dbRes) => {
+            const dbValue = dbRes.val();
 
-    //init state for player name
-    const [playerName, setPlayerName] = useState('')
+            const arrayOfPlayers = [];
 
-    const playerProfile = {
-        'playerName': '',
-        'avatar': ''
-    }
+            for (let propKey in dbValue) {
+                arrayOfPlayers.push({
+                    playerInfo: dbValue[propKey],
+                    id: propKey
+                });
+            }
 
-    //api call to open trivia api
-    useEffect(()=> {
-        fetch('https://opentdb.com/api.php?amount=10')
-            .then(res => res.json())
-            .then((response) => {
-
-            setTriviaQuestions(response.results)
+            setPlayers(arrayOfPlayers);
         })
-    },[])
+    }, [])
 
-    //get value of text input for player name and save to state
-    const handleChange = (event) => {
-        setPlayerName(event.target.value)
+    console.log(players);
+
+    // function that looks for change within the name input
+    const handleChange = (event) => { 
+        setNameInput(event.target.value);
     }
 
-    //event handler for submit button to save users name and avatar and push to firebase
-    const handleClick = (event) => {
+    // function that handles the submit function of the form -> references to the db and creates an object within db with users name and an avatar to go with it
+    const handleSubmit = (event) => {
         event.preventDefault();
 
-        playerProfile.playerName = playerName
-        playerProfile.avatar = `https://api.dicebear.com/5.x/thumbs/svg?seed=${playerName}`
+        const database = getDatabase(firebase);
+        const dbRef = ref(database);
 
-        const db = getDatabase(firebase);
-        const dbRef = ref(db)
-
-        playerName !== ''
-        ? push(dbRef, playerProfile)
-        : alert('Please enter a name')
-
-        setPlayerName('');
+        const playerProfile = {
+            playerName: nameInput,
+            avatar: `https://api.dicebear.com/5.x/thumbs/svg?seed=${nameInput}`
         }
+
+        if (nameInput !== '') {
+            push(dbRef, playerProfile);
+        } else {
+            alert('Enter a name please!');
+        }
+
+        setNameInput("");
+    }
 
     return (
         <>
-        <Form formInput={handleChange} submitHandler={handleClick}/>
+            <form action="" onSubmit= { handleSubmit }>
+                <label htmlFor="nameInput">Player Name: </label>
+                <input type="text" id="nameInput" name="nameInput" onChange={ handleChange } value={nameInput} placeholder="Enter your name here."/>
+                <button>Add Player Name</button>
+            </form>
+
+            <Form />
         </>
-    );
+    )
 }
 
-
-
 export default App;
-
-// just testing upstream
-// still testing upstream
-
-
-// PSUEDO CODE //
-
-// Allow for users to select the amount of players from a drop down sectioon
-// Once number of players are selected mount the UserChoice component, so use the selection for the length of an array and map through to generate the player name & input section
-// User selects category of questions -> once submitted player names get added to firebase along with the avatar -> category selected gets used within the TriviaApi
-// Reroute to Questions.js with the generated info from TriviaApi -> map through state and add questions to component -  setTimeout() function helps with keeping track of the time - if user hits submit button or they dont answer the question in time they're pushed to the next question. 
-// Store score in firebase related to the player playing
-// When all players have finished playing their games the winner is then present in Leaderboard.js with their name and avatar!!!! 🥳🥳🥳
-// If user chooses to restart game user info is deleted from firebase and rerouted to Form.js to play again. 
