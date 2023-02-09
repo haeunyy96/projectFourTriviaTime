@@ -1,8 +1,11 @@
 import { useState } from "react";
+import UserChoice from "./UserChoice";
 
 const Form = () => {    
 
     const [ numberOfPlayers, setNumberOfPlayers ] = useState('');
+
+    const [isVisible, setIsVisible] = useState(false);
 
     const handlePlayerChange = (event) => {
         setNumberOfPlayers(event.target.value);
@@ -11,7 +14,7 @@ const Form = () => {
     const handleNumberOfPlayersSubmit = (event) => {
         event.preventDefault();
 
-        console.log(event);
+        setIsVisible(!isVisible);
     }
 
     return (
@@ -25,8 +28,19 @@ const Form = () => {
                     <option value="3">3 Players</option>
                     <option value="4">4 Players</option>
                 </select>
-                <button>Let's Play!</button>
+                <button>
+                    {
+                        isVisible
+                            ? 'Nevermind'
+                            : 'Let\'s play'
+                    }
+                </button>
             </form>
+            {
+                isVisible
+                    ? <UserChoice numOfPlayers={numberOfPlayers} />
+                    : null
+            }
         </section>
     )
 }
