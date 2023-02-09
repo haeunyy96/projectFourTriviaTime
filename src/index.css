@@ -23,12 +23,23 @@ img {
 
 .listOfPlayers {
   display: flex;
+  flex-direction: column;
   justify-content: flex-start;
   flex-wrap: wrap;
 }
 
 .playerInfo {
+  display: flex;
+  align-items: center;
   width: 25%;
-  margin: 25px;
+  margin: 10px;
+  padding: 10px;
+  border: 3px solid #577F90;
+  border-radius: 5px;
+}
+
+.avatarContainer {
+  width: 25%;
+  margin-right: 25px;
 }
 
