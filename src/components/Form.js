@@ -1,34 +1,48 @@
+import { useState } from "react";
 import UserChoice from "./UserChoice";
 import { useState } from "react";
 
-const Form = ({formInput, submitHandler}) => {
-    const [userSelection, setUserSelection] = useState('')
+const Form = () => {    
 
-    const handleChange = (event) => {
-        setUserSelection(event.target.value);
-        // console.log(event.target.value)
+    const [ numberOfPlayers, setNumberOfPlayers ] = useState('');
+
+    const [isVisible, setIsVisible] = useState(false);
+
+    const handlePlayerChange = (event) => {
+        setNumberOfPlayers(event.target.value);
     }
 
-    const handleSubmit = (event) => {
+    const handleNumberOfPlayersSubmit = (event) => {
         event.preventDefault();
+
+        setIsVisible(!isVisible);
     }
+
     return (
-        <>
-            <form action="" onSubmit={(event) => { handleSubmit(event, userSelection) }}>
-                <label htmlFor="filtration"></label>
-                <select id="filtration" onChange={handleChange} value={userSelection}>
+        <section className='playerChoiceForm'>
+            <form action="" onSubmit={(event) => handleNumberOfPlayersSubmit(event, numberOfPlayers)}>
+                <label htmlFor="filtration">Ready to Play?</label>
+                <select id="filtration" defaultValue={'placeholder'} onChange={ handlePlayerChange }>
                     <option value="placeholder" disabled>Select amount of players</option>
-                    <option value="1">1 player</option>
-                    <option value="2">2 players</option>
-                    <option value="3">3 players</option>
-                    <option value="4">4 players</option>
-                    <option value="5">5 players</option>
-                    <option value="6">6 players</option>
+                    <option value="1">1 Player</option>
+                    <option value="2">2 Players</option>
+                    <option value="3">3 Players</option>
+                    <option value="4">4 Players</option>
                 </select>
-                <input type="submit"/>
+                <button>
+                    {
+                        isVisible
+                            ? 'Nevermind'
+                            : 'Let\'s play'
+                    }
+                </button>
             </form>
-            <UserChoice numberOfPlayers={userSelection} formInput={formInput} submitHandler={submitHandler}/>
-        </>
+            {
+                isVisible
+                    ? <UserChoice numOfPlayers={numberOfPlayers} />
+                    : null
+            }
+        </section>
     )
 }
 
