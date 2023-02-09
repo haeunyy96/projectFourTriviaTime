@@ -4,12 +4,10 @@ import { onValue, ref, getDatabase, remove, push } from 'firebase/database'
 
 const UserChoice = ({ numOfPlayers }) => {
 
-    console.log(numOfPlayers);
-
-    console.log(typeof(numOfPlayers));
-
-    const [players, setPlayers] = useState([]); // initializing state to house an array of players
-    const [nameInput, setNameInput] = useState(''); // initializing state to keep track of the input section
+    const [ players, setPlayers ] = useState([]); // initializing state to house an array of players
+    const [ nameInput, setNameInput ] = useState(''); // initializing state to keep track of the input section
+    const [ disableButton, setDisableButton ] = useState(false); // initializing state to keep track of button status
+    const [ submitCount, setSubmitCount ] = useState(numOfPlayers); // initializing state to keep track of how many times player form is submitted
 
     // side effect that runs on component mount -> any updates to the db will be listened for via firebase onValue module
     // store db and create ref to it
@@ -34,10 +32,12 @@ const UserChoice = ({ numOfPlayers }) => {
         })
     }, [])
 
+    // function that looks for change within the name input
     const handleChange = (event) => {
         setNameInput(event.target.value);
     }
 
+    // function that handles the submit function of the form -> references to the db and creates an object within db with users name and an avatar to go with it
     const handleSubmit = (event) => {
         event.preventDefault();
 
@@ -49,8 +49,12 @@ const UserChoice = ({ numOfPlayers }) => {
             avatar: `https://api.dicebear.com/5.x/thumbs/svg?seed=${nameInput}`
         }
 
-        if (nameInput !== '') {
+        if (nameInput !== '' && isNaN(nameInput)) {
             push(dbRef, playerProfile);
+            setSubmitCount(submitCount - 1);
+            if (submitCount <= 1) {
+                setDisableButton(true);
+            }
         } else {
             alert('Enter a name please!');
         }
@@ -61,15 +65,12 @@ const UserChoice = ({ numOfPlayers }) => {
     return (
         <>
             <form action="" onSubmit= { handleSubmit }>
-                {[...Array(+numOfPlayers)].map((_, index) => {
-                    return (<>
-                        <label htmlFor="nameInput">Player Name: </label>
-                        <input type="text" id="nameInput" name="nameInput" key={index} onChange={ handleChange } value={nameInput} placeholder="Enter your name here."/>
-                        <button>Add Player Name</button>
-                    </>
-                    )
-                })}
+                <label htmlFor="nameInput">Player Name: </label>
+                <input type="text" id="nameInput" name="nameInput" onChange={ handleChange } value={ nameInput } placeholder="Enter your name here."/>
+                <button disabled={disableButton}>Add Player Name</button>
             </form>
+
+            <h2>Remaining Players to Add: {submitCount}</h2>
         </>
     )
 }
