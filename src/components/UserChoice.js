@@ -71,6 +71,19 @@ const UserChoice = ({ numOfPlayers }) => {
             </form>
 
             <h2>Remaining Players to Add: {submitCount}</h2>
+
+            <ul className="listOfPlayers">
+                {
+                    players.map((player)=>{
+                        return <li className="playerInfo" key={player.id}>
+                            <div className="avatarContainer">
+                                <img src={player.playerInfo.avatar} alt="player avatar"></img>
+                            </div>
+                            <h3>{player.playerInfo.playerName}</h3>
+                        </li>
+                    })
+                }
+            </ul>
         </>
     )
 }

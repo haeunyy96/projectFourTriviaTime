@@ -11,3 +11,24 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+ul {
+  list-style: none;
+}
+
+img {
+  display: block;
+  width: 100%;
+}
+
+.listOfPlayers {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.playerInfo {
+  width: 25%;
+  margin: 25px;
+}
+
