@@ -69,7 +69,7 @@ const UserChoice = ({ numOfPlayers }) => {
         remove(dbRef);
         setSubmitCount(submitCount + 1)
     }
-
+    
     return (
         <>
             <form action="" onSubmit= { handleSubmit }>
@@ -82,7 +82,7 @@ const UserChoice = ({ numOfPlayers }) => {
 
             <ul className="listOfPlayers">
                 {
-                    players.map((player)=>{
+                    players.map((player) => {
                         return <li className="playerInfo" key={player.id}>
                             <div className="avatarContainer">
                                 <img src={player.playerInfo.avatar} alt="player avatar"></img>
