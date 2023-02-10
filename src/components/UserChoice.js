@@ -62,6 +62,14 @@ const UserChoice = ({ numOfPlayers }) => {
         setNameInput("");
     }
 
+    //function that deletes a player from the game and removes it from firebase
+    const deletePlayer = (playerId) => {
+        const database = getDatabase(firebase);
+        const dbRef = ref(database, `${playerId}`);
+        remove(dbRef);
+        setSubmitCount(submitCount + 1)
+    }
+
     return (
         <>
             <form action="" onSubmit= { handleSubmit }>
@@ -80,6 +88,7 @@ const UserChoice = ({ numOfPlayers }) => {
                                 <img src={player.playerInfo.avatar} alt="player avatar"></img>
                             </div>
                             <h3>{player.playerInfo.playerName}</h3>
+                            <button onClick={() => {deletePlayer(player.id)}}>Delete Player</button>
                         </li>
                     })
                 }
