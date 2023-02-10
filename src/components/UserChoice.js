@@ -82,13 +82,13 @@ const UserChoice = ({ numOfPlayers }) => {
 
             <ul className="listOfPlayers">
                 {
-                    players.map((player)=>{
+                    players.map((player) => {
                         return <li className="playerInfo" key={player.id}>
                             <div className="avatarContainer">
                                 <img src={player.playerInfo.avatar} alt="player avatar"></img>
                             </div>
                             <h3>{player.playerInfo.playerName}</h3>
-                            <button onClick={() => {deletePlayer(player.id)}}>Delete Player</button>
+                            <button onClick={() => { deletePlayer(player.id) }}>Delete Player</button>
                         </li>
                     })
                 }
