@@ -69,7 +69,6 @@ const UserChoice = ({ numOfPlayers }) => {
         remove(dbRef);
         setSubmitCount(submitCount + 1)
     }
-
     return (
         <>
             <form action="" onSubmit= { handleSubmit }>
