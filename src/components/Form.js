@@ -23,10 +23,10 @@ const Form = () => {
                 <label htmlFor="filtration">Ready to Play?</label>
                 <select id="filtration" defaultValue={'placeholder'} onChange={ handlePlayerChange }>
                     <option value="placeholder" disabled>Select amount of players</option>
-                    <option value="1">11 Player</option>
-                    <option value="2">12 Players</option>
-                    <option value="3">13 Players</option>
-                    <option value="4">14 Players</option>
+                    <option value="1">1 Player</option>
+                    <option value="2">2 Players</option>
+                    <option value="3">3 Players</option>
+                    <option value="4">4 Players</option>
                 </select>
                 <button>
                     {
