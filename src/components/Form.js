@@ -1,6 +1,5 @@
 import { useState } from "react";
 import UserChoice from "./UserChoice";
-import { useState } from "react";
 
 const Form = () => {    
 
