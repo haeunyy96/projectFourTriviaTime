@@ -1,4 +1,3 @@
-import { number } from "prop-types";
 import { useState, useEffect } from "react";
 import Questions from "./Questions";
 import UserChoice from "./UserChoice";
