@@ -1,8 +1,10 @@
+const Questions = ({arrayOfQuestions}) => {
 
-const Questions = () => {
+    console.log(arrayOfQuestions)
 
     return (
         <>
+        <p>test! this is where the questions go!</p>
         </>
     )
 }
