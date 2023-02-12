@@ -46,7 +46,8 @@ const Form = () => {
         const url = new URL('https://opentdb.com/api.php')
         url.search = new URLSearchParams({
             amount: 12,
-            category: userCategorySelection
+            category: userCategorySelection,
+            encode: 'url3986'
         })
         fetch(url)
             .then((response) => {

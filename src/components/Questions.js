@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom";
+import firebase from './firebase';
 
 const Questions = () => {
 
@@ -12,7 +13,7 @@ const Questions = () => {
                 {
                     location.state.map((question, index) => {
                         return <li key={index}>
-                            <p>{question.question}</p>
+                            <p>{decodeURIComponent(question.question)}</p>
                         </li>
                     })
                 }
