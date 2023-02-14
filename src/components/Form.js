@@ -4,28 +4,25 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Form = () => {    
 
-    const [ numberOfPlayers, setNumberOfPlayers ] = useState('');
-    const [quizCategories, setQuizCategories] = useState([]);
-    const [userCategorySelection, setUserCategorySelection] = useState(0);
-    const [triviaQuestions, setTriviaQuestions] = useState([]);
+    const [ numberOfPlayers, setNumberOfPlayers ] = useState(''); // initailizing state to house how many players are playing
+    const [quizCategories, setQuizCategories] = useState([]); // initialized state to hold the list of categories from the api
+    const [userCategorySelection, setUserCategorySelection] = useState(0); // initialized state to hold the user choice for user choice which is identified by a number returned from the api
+    const [triviaQuestions, setTriviaQuestions] = useState([]); // initialized state to hold returned trivia questions including choices + correct answer --> use this to go through choices to push to an array
+    
     const [isVisible, setIsVisible] = useState(false);
 
-    const handlePlayerChange = (event) => {
+    const handlePlayerChange = (event) => { // function for seeing player change 
         setNumberOfPlayers(event.target.value);
     }
 
-    const handleNumberOfPlayersSubmit = (event) => {
+    const handleNumberOfPlayersSubmit = (event) => { // function to check if visibilty of userChoice component
         event.preventDefault();
 
         setIsVisible(!isVisible);
     }
 
-    const handleCategoryChange = (event) => {
+    const handleCategoryChange = (event) => { // function for checking the cateogry of which the player has chosen
         setUserCategorySelection(event.target.value)
-    }
-
-    const handleCategorySelection = (event) => {
-        event.preventDefault();
     }
 
     //api call to populate drop down options for categories in for
@@ -60,7 +57,7 @@ const Form = () => {
 
     const navigate = useNavigate()
 
-    const goToQuestions = (e) => {
+    const goToQuestions = (e) => { // function to reroute to questions component while also passing state via navigate
         e.preventDefault()
         navigate("/questions", { state: triviaQuestions })
     }
@@ -92,7 +89,7 @@ const Form = () => {
                 }
             </div>
             <div className="categoryChoiceForm">
-                <form action="" onSubmit={handleCategorySelection}>
+                <form action="">
                     <label htmlFor="categoryChoice">Choose a Quiz Category</label>
                     <select id="categoryChoice" defaultValue={'placeholder'} onChange={handleCategoryChange}>
                         <option value="placeholder" disabled>Select Category</option>
