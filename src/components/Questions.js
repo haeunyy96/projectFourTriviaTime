@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
-import { getDatabase, ref, onValue, set, update } from "firebase/database";
+import { getDatabase, ref, onValue, set, get } from "firebase/database";
 
 // initialize state to house an array of all answers
 // initialize state to house the correct answer
@@ -76,18 +76,41 @@ const Questions = () => {
     
     //event handler to check if users answer is right and change index number in displayQuestion function so it will display next question in triviaQuestions array
     const submitAnswer = () => {
-        const updateScore = () => {
-            const dbRef = ref(getDatabase());
-            onValue(dbRef, (dbResponse) => {
-                const database = getDatabase(firebase);
-                const dbValue = dbResponse.val();
-                const score = Object.values(dbValue)[0].score
-                console.log(score);
-                set(dbValue, {
-                    score: score +1
-                })
-            })
-        }
+        // const updateScore = (score) => {
+        //     const db = ref(getDatabase(firebase));
+        //     const dbRef = ref(db, `/${score}`);
+        //     set(dbRef, {
+        //         score:1
+        //     })
+        //     // onValue(dbRef, (dbResponse) => {
+        //     //     const dbValue = dbResponse.val();
+        //     //     const score = Object.values(dbValue)[0].score
+        //     //     console.log(score);
+        //     //     set(dbValue, {
+        //     //         score: 1
+        //     //     })
+        //     // })
+        // }
+        const updateScore = (key) => {
+            get(player.score).then((snapshot)=>{
+                let currentCount = snapshot.val();
+                currentCount = currentCount + 1;
+                set(score, currentCount);
+            });
+            // const database = getDatabase(firebase);
+            // const dbRef = ref(database);
+            //     onValue(dbRef, (dbResponse) => {
+            //         const dbValue = dbResponse.val();
+            //         const score = Object.values(dbValue)[0].score
+            //         get(score).then((snapshot) => {
+            //             let currentCount = snapshot.val();
+            //             currentCount = currentCount + 1;
+            //             set(score, currentCount);
+            //         });
+            //     });
+
+        };
+
         return userAnswer === correctAnswer
             ? (setQuestionIndex(questionIndex + 1), updateScore()) //eventually add a function to add points for current player
             : alert('Incorrect. Please try again')
