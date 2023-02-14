@@ -67,7 +67,6 @@ const Form = () => {
             <div className='playerChoiceForm'>
                 <form action="" onSubmit={(event) => handleNumberOfPlayersSubmit(event, numberOfPlayers)}>
                     <label htmlFor="filtration">Ready to Play?</label>
-                    <br></br>
                     <select id="filtration" defaultValue={'placeholder'} onChange={ handlePlayerChange }>
                         <option value="placeholder" disabled>Select amount of players</option>
                         <option value="1">1 Player</option>
@@ -92,7 +91,6 @@ const Form = () => {
             <div className="categoryChoiceForm">
                 <form action="">
                     <label htmlFor="categoryChoice">Choose a Quiz Category</label>
-                    <br></br>
                     <select id="categoryChoice" defaultValue={'placeholder'} onChange={handleCategoryChange}>
                         <option value="placeholder" disabled>Select Category</option>
                         {
