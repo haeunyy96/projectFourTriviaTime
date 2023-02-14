@@ -46,7 +46,8 @@ const UserChoice = ({ numOfPlayers }) => {
 
         const playerProfile = {
             playerName: nameInput,
-            avatar: `https://api.dicebear.com/5.x/thumbs/svg?seed=${nameInput}`
+            avatar: `https://api.dicebear.com/5.x/thumbs/svg?seed=${nameInput}`,
+            score:0
         }
 
         if (nameInput !== '' && isNaN(nameInput)) {
@@ -69,7 +70,6 @@ const UserChoice = ({ numOfPlayers }) => {
         remove(dbRef);
         setSubmitCount(submitCount + 1)
     }
-    
     return (
         <>
             <form action="" onSubmit= { handleSubmit }>
@@ -87,13 +87,15 @@ const UserChoice = ({ numOfPlayers }) => {
                             <div className="avatarContainer">
                                 <img src={player.playerInfo.avatar} alt="player avatar"></img>
                             </div>
-                            <h3>{player.playerInfo.playerName}</h3>
+                            <div>
+                                <h3>{player.playerInfo.playerName}</h3>
+                            </div>
                             <button onClick={() => { deletePlayer(player.id) }}>Delete Player</button>
                         </li>
                     })
                 }
             </ul>
-
+                
         </>
     )
 }
