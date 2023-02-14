@@ -92,7 +92,7 @@ const UserChoice = ({ numOfPlayers }) => {
                     })
                 }
             </ul>
-
+                
         </>
     )
 }
