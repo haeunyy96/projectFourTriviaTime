@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
-import { getDatabase, ref, onValue, increment, set } from "firebase/database";
+import { getDatabase, ref, onValue, set, update } from "firebase/database";
 
 // initialize state to house an array of all answers
 // initialize state to house the correct answer
@@ -25,7 +25,6 @@ const Questions = () => {
             const arrayOfKeys = Object.keys(dbValue);
             const arrayOfUsers = Object.values(dbValue);
             const userArray = [];
-
             const createUser = () => {
                 arrayOfKeys.map((key, index)=>{
                     const userObject = {
@@ -74,19 +73,34 @@ const Questions = () => {
     const handleClick = (e) => {
         setUserAnswer(e.target.value)
     }
-
+    
     //event handler to check if users answer is right and change index number in displayQuestion function so it will display next question in triviaQuestions array
     const submitAnswer = () => {
+        const updateScore = () => {
+            const dbRef = ref(getDatabase());
+            onValue(dbRef, (dbResponse) => {
+                const database = getDatabase(firebase);
+                const dbValue = dbResponse.val();
+                const score = Object.values(dbValue)[0].score
+                console.log(score);
+                set(dbValue, {
+                    score: score +1
+                })
+            })
+        }
         return userAnswer === correctAnswer
-            ? (setQuestionIndex(questionIndex + 1), setScore(score+1)) //eventually add a function to add points for current player
+            ? (setQuestionIndex(questionIndex + 1), updateScore()) //eventually add a function to add points for current player
             : alert('Incorrect. Please try again')
     }
+
+    const currentPlayer = player.slice(0,1)
 
     return (
         <> 
         <ul className="currentPlayer">
             {
-                player.map((player) => {
+
+                currentPlayer.map((player) => {
                     return <li className="playerInfo" key={player.id}>
                         <div className="avatarContainer">
                             <img src={player.avatar} alt="player avatar"></img>
@@ -99,14 +113,23 @@ const Questions = () => {
                 })
             }
         </ul>
+        <div className="triviaContainer">
+            <div className="question">
+                {displayQuestion()}
+            </div>
+            <div className="answers">
+                {addToAnswersArray()}
+                {answersArray.map((answer, index) => {
+                    return <label htmlFor={answer} key={index}>
+                                <input type="radio" name="trivia" id="answer" value={answer} onClick={handleClick} />
+                                {answer}
+                                <br></br>
+                            </label>
+                })}
+                <button onClick={submitAnswer}>Submit</button>
+            </div>
 
-            {displayQuestion()}
-            {addToAnswersArray()}
-
-            {answersArray.map((answer, index) => {
-                return <label htmlFor={answer} key={index}><input type="radio" name="trivia" id="answer" value={answer} onClick={handleClick} />{answer} <br></br></label>
-            })}
-            <button onClick={submitAnswer}>Submit</button>
+        </div>
         </>
     )
 }
