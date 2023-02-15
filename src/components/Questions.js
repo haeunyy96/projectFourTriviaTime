@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
-import { getDatabase, ref, onValue, set, get } from "firebase/database";
+import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
 
 // initialize state to house an array of all answers
 // initialize state to house the correct answer
@@ -91,28 +91,32 @@ const Questions = () => {
         //     //     })
         //     // })
         // }
-        const updateScore = (key) => {
-            get(player.score).then((snapshot)=>{
-                let currentCount = snapshot.val();
-                currentCount = currentCount + 1;
-                set(score, currentCount);
-            });
-            // const database = getDatabase(firebase);
-            // const dbRef = ref(database);
-            //     onValue(dbRef, (dbResponse) => {
-            //         const dbValue = dbResponse.val();
-            //         const score = Object.values(dbValue)[0].score
-            //         get(score).then((snapshot) => {
-            //             let currentCount = snapshot.val();
-            //             currentCount = currentCount + 1;
-            //             set(score, currentCount);
-            //         });
-            //     });
+        const updateScore = () => {
+            // get(player.score).then((snapshot)=>{
+            //     let currentCount = snapshot.val();
+            //     currentCount = currentCount + 1;
+            //     set(score, currentCount);
+            // });
+            const database = getDatabase(firebase);
+            const dbRef = ref(database);
+            console.log(dbRef.key)
+//                 onValue(dbRef, (dbResponse) => {
+//                     const dbValue = dbResponse.val();
+//                     const score = Object.values(dbValue)[0].score
+//                     const key = Object.keys(dbValue)[0]
+
+//                     // update(score = score ++)
+// ;                    const returnScore = (score) => {
+//                         const childRef = ref(database, `/${key}`)
+//                         return update(childRef, score +1)
+//                     }
+// //                     returnScore();
+//                 });
 
         };
 
         return userAnswer === correctAnswer
-            ? (setQuestionIndex(questionIndex + 1), updateScore()) //eventually add a function to add points for current player
+            ? (setQuestionIndex(questionIndex + 1),(updateScore())) //eventually add a function to add points for current player
             : alert('Incorrect. Please try again')
     }
 
@@ -122,7 +126,6 @@ const Questions = () => {
         <> 
         <ul className="currentPlayer">
             {
-
                 currentPlayer.map((player) => {
                     return <li className="playerInfo" key={player.id}>
                         <div className="avatarContainer">
