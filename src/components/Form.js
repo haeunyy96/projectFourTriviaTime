@@ -1,49 +1,139 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import UserChoice from "./UserChoice";
+import { Link, useNavigate } from 'react-router-dom';
+import firebase from './firebase';
+import { onValue, ref, getDatabase, remove, push, get, update, set } from 'firebase/database'
 
-const Form = () => {    
+const Form = () => {
 
-    const [ numberOfPlayers, setNumberOfPlayers ] = useState('');
+    const [numberOfPlayers, setNumberOfPlayers] = useState(''); // initailizing state to house how many players are playing
+    const [quizCategories, setQuizCategories] = useState([]); // initialized state to hold the list of categories from the api
+    const [userCategorySelection, setUserCategorySelection] = useState(0); // initialized state to hold the user choice for user choice which is identified by a number returned from the api
+    const [triviaQuestions, setTriviaQuestions] = useState([]); // initialized state to hold returned trivia questions including choices + correct answer --> use this to go through choices to push to an array
+
+    const [gameKey, setGameKey] = useState(''); // init state to hold game session key
 
     const [isVisible, setIsVisible] = useState(false);
+    const [show, setShow] = useState(false);
 
-    const handlePlayerChange = (event) => {
+    const [disableButton, setDisableButton] = useState(false); // initializing state to keep track of button status
+
+    const handlePlayerChange = (event) => { // function for seeing player change 
         setNumberOfPlayers(event.target.value);
     }
-
-    const handleNumberOfPlayersSubmit = (event) => {
+    const handleNumberOfPlayersSubmit = (event) => { // function to check if visibilty of userChoice component
         event.preventDefault();
-
         setIsVisible(!isVisible);
     }
+    const handleCategoryChange = (event) => { // function for checking the cateogry of which the player has chosen
+        setUserCategorySelection(event.target.value)
+    }
+    //api call to populate drop down options for categories in for
+    useEffect(() => {
+        const url = new URL('https://opentdb.com/api_category.php')
+        fetch(url)
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                setQuizCategories(data.trivia_categories);
+            })
+    }, [])
+    //api call to fetch quiz question data based on user category selection
+    useEffect(() => {
+        const url = new URL('https://opentdb.com/api.php')
+        url.search = new URLSearchParams({
+            amount: numberOfPlayers * 3,
+            category: userCategorySelection,
+            encode: 'url3986'
+        })
+        fetch(url)
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                setTriviaQuestions(data.results)
+            })
+    }, [userCategorySelection])
+    const navigate = useNavigate()
+
+    const goToQuestions = (e) => { // function to reroute to questions component while also passing state via navigate
+        e.preventDefault()
+        navigate("/questions", { state: { triviaQuestions: triviaQuestions, gameKey: gameKey } })
+    }
+
+    const gameSession = (e) => {
+        e.preventDefault()
+
+        const database = getDatabase(firebase);
+        const dbRef = ref(database);
+
+        const gameId = ''
+
+        const playerObject = push(dbRef, gameId)
+        setGameKey(playerObject.key);
+
+        // use playerObject.key.[player1, player2, player etc..] to add player info to the game session object in firebase
+
+        setShow(!show);
+        setDisableButton(true);
+        return playerObject;
+    }
+
+
 
     return (
-        <section className='playerChoiceForm'>
-            <form action="" onSubmit={(event) => handleNumberOfPlayersSubmit(event, numberOfPlayers)}>
-                <label htmlFor="filtration">Ready to Play?</label>
-                <select id="filtration" defaultValue={'placeholder'} onChange={ handlePlayerChange }>
-                    <option value="placeholder" disabled>Select amount of players</option>
-                    <option value="1">1 Player</option>
-                    <option value="2">2 Players</option>
-                    <option value="3">3 Players</option>
-                    <option value="4">4 Players</option>
-                </select>
-                <button>
-                    {
-                        isVisible
-                            ? 'Nevermind'
-                            : 'Let\'s play'
-                    }
-                </button>
-            </form>
+        <section>
+            <button onClick={gameSession} disabled={disableButton}>Click to Start! 😡</button>
             {
-                isVisible
-                    ? <UserChoice numOfPlayers={numberOfPlayers} />
+                show
+                    ?
+                    <><div className='playerChoiceForm'>
+                        <form action="" onSubmit={(event) => handleNumberOfPlayersSubmit(event, numberOfPlayers)}>
+                            <label htmlFor="filtration">Ready to Play?</label>
+                            <br></br>
+                            <select id="filtration" defaultValue={'placeholder'} onChange={handlePlayerChange}>
+                                <option value="placeholder" disabled>Select amount of players</option>
+                                <option value="1">1 Player</option>
+                                <option value="2">2 Players</option>
+                                <option value="3">3 Players</option>
+                                <option value="4">4 Players</option>
+                            </select>
+                            <button>
+                                {
+                                    isVisible
+                                        ? 'Nevermind'
+                                        : 'Let\'s play'
+                                }
+                            </button>
+                        </form>
+                        {
+                            isVisible
+                                ? <UserChoice numOfPlayers={numberOfPlayers} gameKey={gameKey} />
+                                : null
+                        }
+                    </div>
+                        <div className="categoryChoiceForm">
+                            <form action="">
+                                <label htmlFor="categoryChoice">Choose a Quiz Category</label>
+                                <br></br>
+                                <select id="categoryChoice" defaultValue={'placeholder'} onChange={handleCategoryChange}>
+                                    <option value="placeholder" disabled>Select Category</option>
+                                    {
+                                        quizCategories.map((quizCategory) => {
+                                            return <option key={quizCategory.id} value={quizCategory.id}>{quizCategory.name}</option>
+                                        })
+                                    }
+                                </select>
+                                <Link to="/questions" onClick={goToQuestions}>
+                                    <button>Go to Quiz!</button>
+                                </Link>
+                            </form>
+                        </div>
+                    </>
                     : null
             }
         </section>
-
     )
 }
-
 export default Form;
