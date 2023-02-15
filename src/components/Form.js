@@ -43,7 +43,7 @@ const Form = () => {
     useEffect(() => {
         const url = new URL('https://opentdb.com/api.php')
         url.search = new URLSearchParams({
-            amount: 12,
+            amount: numberOfPlayers * 3,
             category: userCategorySelection,
             encode: 'url3986'
         })
@@ -56,9 +56,10 @@ const Form = () => {
             })
     }, [userCategorySelection])
     const navigate = useNavigate()
+
     const goToQuestions = (e) => { // function to reroute to questions component while also passing state via navigate
         e.preventDefault()
-        navigate("/questions", { state: triviaQuestions })
+        navigate("/questions", { state: { triviaQuestions: triviaQuestions, gameKey: gameKey } })
     }
 
     const gameSession = (e) => {

@@ -18,7 +18,7 @@ const Questions = () => {
 
     useEffect(() => {
         const database = getDatabase(firebase);
-        const dbRef = ref(getDatabase());
+        const dbRef = ref(database, `${gameKey}`);
 
         onValue(dbRef, (dbResponse)=>{
             const dbValue = dbResponse.val();
@@ -39,6 +39,8 @@ const Questions = () => {
         })
     },[])
 
+    console.log(player);
+
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
     // const [correctAnswer, setCorrectAnswer] = useState('');
     // const [incorrectAnswer, setIncorrectAnswer] = useState('');
@@ -46,7 +48,10 @@ const Questions = () => {
     const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
 
     const location = useLocation();
-    const triviaQuestions = location.state //trivia question array from api
+    const triviaQuestions = location.state.triviaQuestions //trivia question array from api
+    const gameKey = location.state.gameKey
+
+    console.log(triviaQuestions, gameKey);
 
     const answersArray = [] //empty array to store all answers
     const correctAnswer = decodeURIComponent(triviaQuestions[questionIndex].correct_answer) //variable for correct answer - move to state

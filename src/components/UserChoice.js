@@ -40,7 +40,8 @@ const UserChoice = ({ numOfPlayers, gameKey }) => {
         const playerInfo = {
                 playerName: nameInput,
                 avatar: `https://api.dicebear.com/5.x/thumbs/svg?seed=${nameInput}`,
-                score: 0
+                score: 0,
+                questions: ['']
             }
 
         if (nameInput !== '' && isNaN(nameInput)) {
@@ -57,7 +58,7 @@ const UserChoice = ({ numOfPlayers, gameKey }) => {
     //function that deletes a player from the game and removes it from firebase
     const deletePlayer = (playerId) => {
         const database = getDatabase(firebase);
-        const dbRef = ref(database, `${playerId}`);
+        const dbRef = ref(database, `${gameKey}/${playerId}`);
         remove(dbRef);
         setSubmitCount(submitCount + 1)
     }
