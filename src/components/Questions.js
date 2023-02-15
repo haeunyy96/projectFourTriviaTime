@@ -14,7 +14,7 @@ import { getDatabase, ref, onValue, set, update } from "firebase/database";
 
 const Questions = () => {
 
-    const [player, setPlayer] = useState([]);
+    const [ player, setPlayer ] = useState([]);
 
     useEffect(() => {
         const database = getDatabase(firebase);
@@ -75,21 +75,37 @@ const Questions = () => {
     }
     
     //event handler to check if users answer is right and change index number in displayQuestion function so it will display next question in triviaQuestions array
+    // const updateScore = () => {
+    //     const dbRef = ref(getDatabase());
+    //     onValue(dbRef, (dbResponse) => {
+    //         const database = getDatabase(firebase);
+    //         const dbValue = dbResponse.val();
+    //         const score = Object.values(dbValue)[0].score
+    //         console.log(score);
+    //         set(dbValue, {
+    //             score: score +1
+    //         })
+    //     })
+    // }
+
+    const updateScore = () => {
+        const database = getDatabase(firebase);
+        const dbRef = ref(database);
+        onValue(dbRef, (dbRes) => {
+            const dbVal = dbRes.val();
+            const userId = Object.keys(dbVal).map( (e) => {
+                return e;
+            });
+
+            console.log(userId);
+        })
+    }
+
+    updateScore();
+
     const submitAnswer = () => {
-        const updateScore = () => {
-            const dbRef = ref(getDatabase());
-            onValue(dbRef, (dbResponse) => {
-                const database = getDatabase(firebase);
-                const dbValue = dbResponse.val();
-                const score = Object.values(dbValue)[0].score
-                console.log(score);
-                set(dbValue, {
-                    score: score +1
-                })
-            })
-        }
         return userAnswer === correctAnswer
-            ? (setQuestionIndex(questionIndex + 1), updateScore()) //eventually add a function to add points for current player
+            ? (setQuestionIndex(questionIndex + 1)) //eventually add a function to add points for current player
             : alert('Incorrect. Please try again')
     }
 

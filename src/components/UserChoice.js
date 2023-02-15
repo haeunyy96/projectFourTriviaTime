@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import firebase from './firebase';
-import { onValue, ref, getDatabase, remove, push } from 'firebase/database'
+import { onValue, ref, getDatabase, remove, push, get, update } from 'firebase/database'
 
-const UserChoice = ({ numOfPlayers }) => {
+const UserChoice = ({ numOfPlayers, gameKey }) => {
 
     const [ players, setPlayers ] = useState([]); // initializing state to house an array of players
     const [ nameInput, setNameInput ] = useState(''); // initializing state to keep track of the input section
     const [ disableButton, setDisableButton ] = useState(false); // initializing state to keep track of button status
     const [ submitCount, setSubmitCount ] = useState(numOfPlayers); // initializing state to keep track of how many times player form is submitted
 
+    console.log(gameKey);
     // side effect that runs on component mount -> any updates to the db will be listened for via firebase onValue module
     // store db and create ref to it
     // use onValue to listen for changes within the db and on page load -> whenever changes occur save the players currently within db in state
@@ -44,14 +45,8 @@ const UserChoice = ({ numOfPlayers }) => {
         const database = getDatabase(firebase);
         const dbRef = ref(database);
 
-        const playerProfile = {
-            playerName: nameInput,
-            avatar: `https://api.dicebear.com/5.x/thumbs/svg?seed=${nameInput}`,
-            score:0
-        }
-
         if (nameInput !== '' && isNaN(nameInput)) {
-            push(dbRef, playerProfile);
+            push(dbRef, { playerData: { playerName: nameInput, avatar: `https://api.dicebear.com/5.x/thumbs/svg?seed=${nameInput}`, score: 0 } });
             setSubmitCount(submitCount - 1);
             if (submitCount <= 1) {
                 setDisableButton(true);
@@ -70,6 +65,8 @@ const UserChoice = ({ numOfPlayers }) => {
         remove(dbRef);
         setSubmitCount(submitCount + 1)
     }
+
+
     return (
         <>
             <form action="" onSubmit= { handleSubmit }>
