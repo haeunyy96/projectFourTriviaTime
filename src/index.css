@@ -88,3 +88,7 @@ button:focus {
 .question {
   width: 90%;
 }
+.headerLink {
+  color: #F0917A;
+  text-decoration: none;
+}

@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
-import { getDatabase, ref, onValue, set, update } from "firebase/database";
+import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
 
 // initialize state to house an array of all answers
 // initialize state to house the correct answer
@@ -18,7 +18,7 @@ const Questions = () => {
 
     useEffect(() => {
         const database = getDatabase(firebase);
-        const dbRef = ref(getDatabase());
+        const dbRef = ref(database, `${gameKey}`);
 
         onValue(dbRef, (dbResponse)=>{
             const dbValue = dbResponse.val();
@@ -39,6 +39,8 @@ const Questions = () => {
         })
     },[])
 
+    console.log(player);
+
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
     // const [correctAnswer, setCorrectAnswer] = useState('');
     // const [incorrectAnswer, setIncorrectAnswer] = useState('');
@@ -46,7 +48,10 @@ const Questions = () => {
     const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
 
     const location = useLocation();
-    const triviaQuestions = location.state //trivia question array from api
+    const triviaQuestions = location.state.triviaQuestions //trivia question array from api
+    const gameKey = location.state.gameKey
+
+    console.log(triviaQuestions, gameKey);
 
     const answersArray = [] //empty array to store all answers
     const correctAnswer = decodeURIComponent(triviaQuestions[questionIndex].correct_answer) //variable for correct answer - move to state
@@ -104,8 +109,47 @@ const Questions = () => {
     updateScore();
 
     const submitAnswer = () => {
+        // const updateScore = (score) => {
+        //     const db = ref(getDatabase(firebase));
+        //     const dbRef = ref(db, `/${score}`);
+        //     set(dbRef, {
+        //         score:1
+        //     })
+        //     // onValue(dbRef, (dbResponse) => {
+        //     //     const dbValue = dbResponse.val();
+        //     //     const score = Object.values(dbValue)[0].score
+        //     //     console.log(score);
+        //     //     set(dbValue, {
+        //     //         score: 1
+        //     //     })
+        //     // })
+        // }
+        const updateScore = () => {
+            // get(player.score).then((snapshot)=>{
+            //     let currentCount = snapshot.val();
+            //     currentCount = currentCount + 1;
+            //     set(score, currentCount);
+            // });
+            const database = getDatabase(firebase);
+            const dbRef = ref(database);
+            console.log(dbRef.key)
+//                 onValue(dbRef, (dbResponse) => {
+//                     const dbValue = dbResponse.val();
+//                     const score = Object.values(dbValue)[0].score
+//                     const key = Object.keys(dbValue)[0]
+
+//                     // update(score = score ++)
+// ;                    const returnScore = (score) => {
+//                         const childRef = ref(database, `/${key}`)
+//                         return update(childRef, score +1)
+//                     }
+// //                     returnScore();
+//                 });
+
+        };
+
         return userAnswer === correctAnswer
-            ? (setQuestionIndex(questionIndex + 1)) //eventually add a function to add points for current player
+            ? (setQuestionIndex(questionIndex + 1),(updateScore())) //eventually add a function to add points for current player
             : alert('Incorrect. Please try again')
     }
 
@@ -115,7 +159,6 @@ const Questions = () => {
         <> 
         <ul className="currentPlayer">
             {
-
                 currentPlayer.map((player) => {
                     return <li className="playerInfo" key={player.id}>
                         <div className="avatarContainer">
