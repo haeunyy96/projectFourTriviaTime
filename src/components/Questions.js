@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
 import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
+import { useCountdown } from 'usehooks-ts'
 
 // initialize state to house an array of all answers
 // initialize state to house the correct answer
@@ -14,11 +15,18 @@ import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
 
 const Questions = () => {
 
+
+    // Countdown logic
+    const count = useCountdown({
+        countStart: 30,
+        intervalMs: 1000
+    })
+
     const [player, setPlayer] = useState([]);
 
     useEffect(() => {
         const database = getDatabase(firebase);
-        const dbRef = ref(database, `${gameKey}`);
+        const dbRef = ref(getDatabase());
 
         onValue(dbRef, (dbResponse)=>{
             const dbValue = dbResponse.val();
@@ -39,8 +47,6 @@ const Questions = () => {
         })
     },[])
 
-    console.log(player);
-
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
     // const [correctAnswer, setCorrectAnswer] = useState('');
     // const [incorrectAnswer, setIncorrectAnswer] = useState('');
@@ -48,10 +54,7 @@ const Questions = () => {
     const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
 
     const location = useLocation();
-    const triviaQuestions = location.state.triviaQuestions //trivia question array from api
-    const gameKey = location.state.gameKey
-
-    console.log(triviaQuestions, gameKey);
+    const triviaQuestions = location.state //trivia question array from api
 
     const answersArray = [] //empty array to store all answers
     const correctAnswer = decodeURIComponent(triviaQuestions[questionIndex].correct_answer) //variable for correct answer - move to state
@@ -104,19 +107,18 @@ const Questions = () => {
             // });
             const database = getDatabase(firebase);
             const dbRef = ref(database);
-            console.log(dbRef.key)
-//                 onValue(dbRef, (dbResponse) => {
-//                     const dbValue = dbResponse.val();
-//                     const score = Object.values(dbValue)[0].score
-//                     const key = Object.keys(dbValue)[0]
+                onValue(dbRef, (dbResponse) => {
+                    const dbValue = dbResponse.val();
+                    const score = Object.values(dbValue)[0].score
+                    const key = Object.keys(dbValue)[0]
 
-//                     // update(score = score ++)
-// ;                    const returnScore = (score) => {
-//                         const childRef = ref(database, `/${key}`)
-//                         return update(childRef, score +1)
-//                     }
-// //                     returnScore();
-//                 });
+                    // update(score = score ++)
+;                    const returnScore = (score) => {
+                        const childRef = ref(database, `/${key}`)
+                        return update(childRef, score +1)
+                    }
+//                     returnScore();
+                });
 
         };
 
@@ -129,6 +131,7 @@ const Questions = () => {
 
     return (
         <> 
+        <p>Counter:{count}</p>
         <ul className="currentPlayer">
             {
                 currentPlayer.map((player) => {
