@@ -39,19 +39,57 @@ const Questions = () => {
         })
     },[])
 
-    console.log(player);
-
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
     // const [correctAnswer, setCorrectAnswer] = useState('');
     // const [incorrectAnswer, setIncorrectAnswer] = useState('');
     // const [answersArray, setAnswersArray] = useState([])
     const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
 
+    const [ dbPlayerKey, setDbPlayerKey ] = useState([]);
+
+
+    // passing in props via useLocation function imported from react-router-dom -> info is being passed from Form.js
     const location = useLocation();
     const triviaQuestions = location.state.triviaQuestions //trivia question array from api
-    const gameKey = location.state.gameKey
+    const gameKey = location.state.gameKey // gameKey is the unique key from firebase db
+    const numberOfPlayers = location.state.numberOfPlayers // amount of players passed through form.js
 
-    console.log(triviaQuestions, gameKey);
+    const splitQuestions = (triviaArray, players) => {
+        const questions = [];
+        const questionsPerPlayer = (triviaArray.length / players);
+
+        for (let i = 0; i < triviaArray.length; i += questionsPerPlayer) {
+            questions.push(triviaArray.slice(i, i + questionsPerPlayer));
+        }
+
+        return questions;
+    }
+
+    const questions = splitQuestions(triviaQuestions, numberOfPlayers);
+
+    console.log(questions);
+    console.log(player);
+
+    // const assignQuestions = player.map((playerObject) => {
+    //     const 
+    // })
+
+    Object.keys(player).forEach((playerId, index) => {
+        player[playerId].questions = questions[index]
+    })
+    
+    console.log(player.forEach((e) => {
+        console.log(e);
+    }));
+
+
+    // console.log(playerKeyArray);
+
+    // console.log(triviaQuestions.map( (e) => {
+    //     console.log(e)
+        // console.log("This is the question: " + decodeURIComponent(e.question), "This is the answer: " + decodeURIComponent(e.correct_answer), "These are the wrong answers: " + decodeURIComponent(e.incorrect_answers))
+    // }));
+
 
     const answersArray = [] //empty array to store all answers
     const correctAnswer = decodeURIComponent(triviaQuestions[questionIndex].correct_answer) //variable for correct answer - move to state
@@ -93,20 +131,20 @@ const Questions = () => {
     //     })
     // }
 
-    const updateScore = () => {
-        const database = getDatabase(firebase);
-        const dbRef = ref(database);
-        onValue(dbRef, (dbRes) => {
-            const dbVal = dbRes.val();
-            const userId = Object.keys(dbVal).map( (e) => {
-                return e;
-            });
+    // const updateScore = () => {
+    //     const database = getDatabase(firebase);
+    //     const dbRef = ref(database);
+    //     onValue(dbRef, (dbRes) => {
+    //         const dbVal = dbRes.val();
+    //         const userId = Object.keys(dbVal).map( (e) => {
+    //             return e;
+    //         });
 
-            console.log(userId);
-        })
-    }
+    //         console.log(userId);
+    //     })
+    // }
 
-    updateScore();
+    // updateScore();
 
     const submitAnswer = () => {
         // const updateScore = (score) => {

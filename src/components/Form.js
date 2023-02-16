@@ -59,7 +59,7 @@ const Form = () => {
 
     const goToQuestions = (e) => { // function to reroute to questions component while also passing state via navigate
         e.preventDefault()
-        navigate("/questions", { state: { triviaQuestions: triviaQuestions, gameKey: gameKey } })
+        navigate("/questions", { state: { triviaQuestions: triviaQuestions, gameKey: gameKey, numberOfPlayers: numberOfPlayers } })
     }
 
     const gameSession = (e) => {
