@@ -37,21 +37,23 @@ const Questions = () => {
             }
             createUser();
         })
+
     },[])
 
-    console.log(player);
-
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
+    const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
+    const [shuffledAnswers, setShuffledAnswers] = useState([])
+    useEffect(() =>{
+        setShuffledAnswers(shuffleAnswers(answersArray));
+    },[questionIndex])
+
     // const [correctAnswer, setCorrectAnswer] = useState('');
     // const [incorrectAnswer, setIncorrectAnswer] = useState('');
-    // const [answersArray, setAnswersArray] = useState([])
-    const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
 
     const location = useLocation();
     const triviaQuestions = location.state.triviaQuestions //trivia question array from api
     const gameKey = location.state.gameKey
 
-    console.log(triviaQuestions, gameKey);
 
     const answersArray = [] //empty array to store all answers
     const correctAnswer = decodeURIComponent(triviaQuestions[questionIndex].correct_answer) //variable for correct answer - move to state
@@ -72,6 +74,14 @@ const Questions = () => {
         incorrectAnswer.map((answer) => {
             answersArray.push(decodeURIComponent(answer))
         })
+    }
+
+    const shuffleAnswers = (array) => {
+        for(let i= array.length -1; i >0; i--) {
+            let j = Math.floor(Math.random() * (i +1));
+            [array[i], array[j]] = [array[j], array[i]]
+        }
+        return array
     }
 
     //event handler to save users answer to state
@@ -150,7 +160,7 @@ const Questions = () => {
             </div>
             <div className="answers">
                 {addToAnswersArray()}
-                {answersArray.map((answer, index) => {
+                    {shuffledAnswers.map((answer, index) => {
                     return <label htmlFor={answer} key={index}>
                                 <input type="radio" name="trivia" id="answer" value={answer} onClick={handleClick} />
                                 {answer}
