@@ -16,6 +16,10 @@ code {
     monospace;
 }
 
+h2, h3, h4, h5, h6, p {
+  margin: 0
+}
+
 ul {
   list-style: none;
 }
@@ -91,4 +95,10 @@ button:focus {
 .headerLink {
   color: #F0917A;
   text-decoration: none;
+}
+
+.counterTime {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #86C2AE;
 }
