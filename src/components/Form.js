@@ -59,7 +59,7 @@ const Form = () => {
 
     const goToQuestions = (e) => { // function to reroute to questions component while also passing state via navigate
         e.preventDefault()
-        navigate("/questions", { state: { triviaQuestions: triviaQuestions, gameKey: gameKey } })
+        navigate("/questions", { state: { triviaQuestions: triviaQuestions, gameKey: gameKey, timer: timer } })
     }
 
     const gameSession = (e) => {
@@ -80,57 +80,68 @@ const Form = () => {
         return playerObject;
     }
 
+    const [timer, setTimer] = useState(30)
 
-
+    const handleTimerChange = (event) => {
+        setTimer(event.target.value)
+    }
     return (
         <section>
-            <button onClick={gameSession} disabled={disableButton}>Click to Start! 😡</button>
+            <button className="startButton" onClick={gameSession} disabled={disableButton}>Click to Start! 😡</button>
             {
                 show
-                    ?
-                    <><div className='playerChoiceForm'>
-                        <form action="" onSubmit={(event) => handleNumberOfPlayersSubmit(event, numberOfPlayers)}>
-                            <label htmlFor="filtration">Ready to Play?</label>
-                            <br></br>
-                            <select id="filtration" defaultValue={'placeholder'} onChange={handlePlayerChange}>
-                                <option value="placeholder" disabled>Select amount of players</option>
-                                <option value="1">1 Player</option>
-                                <option value="2">2 Players</option>
-                                <option value="3">3 Players</option>
-                                <option value="4">4 Players</option>
-                            </select>
-                            <button>
+                    ? 
+                        <div className="formContainer">
+                            <div className='playerChoiceForm'>
+                                <form action="" onSubmit={(event) => handleNumberOfPlayersSubmit(event, numberOfPlayers)}>
+                                    <label htmlFor="filtration">Choose a Number of Players</label>
+                                    <select id="filtration" defaultValue={'placeholder'} onChange={handlePlayerChange}>
+                                        <option value="placeholder" disabled>Select amount of players</option>
+                                        <option value="1">1 Player</option>
+                                        <option value="2">2 Players</option>
+                                        <option value="3">3 Players</option>
+                                        <option value="4">4 Players</option>
+                                    </select>
+                                    <button>
+                                        {
+                                            isVisible
+                                                ? 'Nevermind'
+                                                : 'Let\'s play'
+                                        }
+                                    </button>
+                                </form>
                                 {
                                     isVisible
-                                        ? 'Nevermind'
-                                        : 'Let\'s play'
+                                        ? <UserChoice numOfPlayers={numberOfPlayers} gameKey={gameKey} />
+                                        : null
                                 }
-                            </button>
-                        </form>
-                        {
-                            isVisible
-                                ? <UserChoice numOfPlayers={numberOfPlayers} gameKey={gameKey} />
-                                : null
-                        }
-                    </div>
-                        <div className="categoryChoiceForm">
-                            <form action="">
-                                <label htmlFor="categoryChoice">Choose a Quiz Category</label>
-                                <br></br>
-                                <select id="categoryChoice" defaultValue={'placeholder'} onChange={handleCategoryChange}>
-                                    <option value="placeholder" disabled>Select Category</option>
-                                    {
-                                        quizCategories.map((quizCategory) => {
-                                            return <option key={quizCategory.id} value={quizCategory.id}>{quizCategory.name}</option>
-                                        })
-                                    }
-                                </select>
+                            </div>
+                            <div className="categoryChoiceForm">
+                                <form action="">
+                                    <label htmlFor="categoryChoice">Choose a Quiz Category</label>
+                                    <select id="categoryChoice" defaultValue={'placeholder'} onChange={handleCategoryChange}>
+                                        <option value="placeholder" disabled>Select Category</option>
+                                        {
+                                            quizCategories.map((quizCategory) => {
+                                                return <option key={quizCategory.id} value={quizCategory.id}>{quizCategory.name}</option>
+                                            })
+                                        }
+                                    </select>
+                                </form>
+                                <form action="">
+                                    <label htmlFor="timerChoice">Choose the Level of Difficulty</label>
+                                    <select id="timerChoice" defaultValue={'placeholder'} onChange={handleTimerChange}>
+                                        <option value="placeholder" disabled>Select time</option>
+                                        <option value="60">Easy (60 seconds)</option>
+                                        <option value="30">Moderate (30 seconds)</option>
+                                        <option value="15">Hard (15 seconds)</option>
+                                    </select>
+                                </form>
                                 <Link to="/questions" onClick={goToQuestions}>
-                                    <button>Go to Quiz!</button>
+                                <button className="goToQuizButton">Go to Quiz!</button>
                                 </Link>
-                            </form>
+                            </div>
                         </div>
-                    </>
                     : null
             }
         </section>

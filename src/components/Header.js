@@ -5,6 +5,7 @@ const Header = () => {
             <Link to="/" className='headerLink'>
             <h1>Trivia Time</h1>
             </Link>
+            <hr></hr>
         </header>
     )
 }

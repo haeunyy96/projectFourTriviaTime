@@ -71,7 +71,7 @@ const UserChoice = ({ numOfPlayers, gameKey }) => {
                 <input type="text" id="nameInput" name="nameInput" onChange={handleChange} value={nameInput} placeholder="Enter your name here." />
                 <button disabled={disableButton}>Add Player Name</button>
             </form>
-            <h2>Remaining Players to Add: {submitCount}</h2>
+            <p className="remainingPlayers">Remaining # of Players to Add: {submitCount}</p>
             <ul className="listOfPlayers">
                 {
                     players.map((player) => {

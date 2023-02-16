@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
 import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
 import { useCountdown } from 'usehooks-ts'
+
 // initialize state to house an array of all answers
 // initialize state to house the correct answer
 // inititalize state to check the users input
@@ -12,13 +13,6 @@ import { useCountdown } from 'usehooks-ts'
 // create object within firebase that holds the game info (per player) -> use that object to push questions & answers from api to then tie this info to the according player  
 
 const Questions = () => {
-
-    // Countdown logic
-    const [count, { startCountdown, resetCountdown }] = useCountdown({
-        countStart: 30,
-        intervalMs: 1000
-    })
-    const [player, setPlayer] = useState([]);
 
     useEffect(() => {
         const database = getDatabase(firebase);
@@ -44,16 +38,6 @@ const Questions = () => {
         startCountdown();
     }, [])
 
-    useEffect(() => {
-        if (count === 0) {
-            setQuestionIndex(questionIndex + 1);
-            resetCountdown();
-            startCountdown();
-        }
-    }, [count])
-
-    console.log(player);
-
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
     // const [correctAnswer, setCorrectAnswer] = useState('');
     // const [incorrectAnswer, setIncorrectAnswer] = useState('');
@@ -63,13 +47,28 @@ const Questions = () => {
     const location = useLocation();
     const triviaQuestions = location.state.triviaQuestions //trivia question array from api
     const gameKey = location.state.gameKey
+    const timer = location.state.timer
 
-    console.log(triviaQuestions, gameKey);
+    // Countdown logic
+    const [count, { startCountdown, resetCountdown }] = useCountdown({
+        countStart: timer,
+        intervalMs: 1000
+    })
+    const [player, setPlayer] = useState([]);
+
+    useEffect(() => {
+        if (count === 0) {
+            setQuestionIndex(questionIndex + 1);
+            resetCountdown();
+            startCountdown();
+        }
+    }, [count])
 
     const answersArray = [] //empty array to store all answers
     const correctAnswer = decodeURIComponent(triviaQuestions[questionIndex].correct_answer) //variable for correct answer - move to state
     const incorrectAnswer = triviaQuestions[questionIndex].incorrect_answers //variable for incorrect answers array - also move to state?
     const [score, setScore] = useState(0)
+
     //function to display question with questionIndex variable
     const displayQuestion = () => {
         return <p>Q. {decodeURIComponent(triviaQuestions[questionIndex].question)}</p>
@@ -102,64 +101,32 @@ const Questions = () => {
 
     const updateScore = () => {
         const database = getDatabase(firebase);
-        const dbRef = ref(database);
+        const dbRef = ref(database, `${gameKey}`);
         onValue(dbRef, (dbRes) => {
             const dbVal = dbRes.val();
-            const userId = Object.keys(dbVal).map((e) => {
-                return e;
-            });
-
-            console.log(userId);
+            const currentScore = Object.values(dbVal)[0].score
+            // console.log(currentScore)
+            setScore(score => score + 1)
+            // console.log(score)
+            // const addScore = { score }
+            // set(currentScore, addScore);
         })
+        // set(ref(database, `${gameKey}/`))
     }
 
-    updateScore();
+    // function updateScore(userId, score) {
+    //     const database = getDatabase(firebase);
+    //     setScore(score => score + 1)
+    //     set(ref(database, `${gameKey}/` + userId), {
+    //         score: `${score}`
+    //     })
+    // }
 
     const submitAnswer = () => {
-        // const updateScore = (score) => {
-        //     const db = ref(getDatabase(firebase));
-        //     const dbRef = ref(db, `/${score}`);
-        //     set(dbRef, {
-        //         score:1
-        //     })
-        //     // onValue(dbRef, (dbResponse) => {
-        //     //     const dbValue = dbResponse.val();
-        //     //     const score = Object.values(dbValue)[0].score
-        //     //     console.log(score);
-        //     //     set(dbValue, {
-        //     //         score: 1
-        //     //     })
-        //     // })
-        // }
-        const updateScore = () => {
-            // get(player.score).then((snapshot)=>{
-            //     let currentCount = snapshot.val();
-            //     currentCount = currentCount + 1;
-            //     set(score, currentCount);
-            // });
-            const database = getDatabase(firebase);
-            const dbRef = ref(database);
-            console.log(dbRef.key)
-            //                 onValue(dbRef, (dbResponse) => {
-            //                     const dbValue = dbResponse.val();
-            //                     const score = Object.values(dbValue)[0].score
-            //                     const key = Object.keys(dbValue)[0]
-
-            //                     // update(score = score ++)
-            // ;                    const returnScore = (score) => {
-            //                         const childRef = ref(database, `/${key}`)
-            //                         return update(childRef, score +1)
-            //                     }
-            // //                     returnScore();
-            //                 });
-
-        };
-
         return (userAnswer === correctAnswer)
-            ? (setQuestionIndex(questionIndex + 1), resetCountdown(), startCountdown(),(updateScore())) //eventually add a function to add points for current player
+            ? (setQuestionIndex(questionIndex + 1), resetCountdown(), startCountdown(),updateScore()) //eventually add a function to add points for current player
             : alert('Incorrect. Please try again')
     }
-
     const currentPlayer = player.slice(0, 1)
 
     return (
@@ -179,7 +146,7 @@ const Questions = () => {
                             </div>
                             <div>
                                 <h3>{player.playerName}</h3>
-                                <p>Your score is: {player.score}/3</p>
+                                <p>Your score is: {score}/3</p>
                             </div>
                         </li>
                     })
