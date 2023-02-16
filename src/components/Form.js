@@ -91,6 +91,7 @@ const Form = () => {
             {
                 show
                     ? 
+                        <div className="formDiv">
                         <div className="formContainer">
                             <div className='playerChoiceForm'>
                                 <form action="" onSubmit={(event) => handleNumberOfPlayersSubmit(event, numberOfPlayers)}>
@@ -106,7 +107,7 @@ const Form = () => {
                                         {
                                             isVisible
                                                 ? 'Nevermind'
-                                                : 'Let\'s play'
+                                                : 'Submit'
                                         }
                                     </button>
                                 </form>
@@ -116,6 +117,7 @@ const Form = () => {
                                         : null
                                 }
                             </div>
+                            <div className="verticalLine"></div>
                             <div className="categoryChoiceForm">
                                 <form action="">
                                     <label htmlFor="categoryChoice">Choose a Quiz Category</label>
@@ -137,11 +139,13 @@ const Form = () => {
                                         <option value="15">Hard (15 seconds)</option>
                                     </select>
                                 </form>
-                                <Link to="/questions" onClick={goToQuestions}>
-                                <button className="goToQuizButton">Go to Quiz!</button>
-                                </Link>
                             </div>
                         </div>
+                            <Link to="/questions" onClick={goToQuestions}>
+                                <button className="goToQuizButton">Go to Quiz!</button>
+                            </Link>
+                        </div>
+
                     : null
             }
         </section>
