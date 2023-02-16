@@ -1,6 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
 import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
 
@@ -15,6 +14,8 @@ import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
 const Questions = () => {
 
     const [ player, setPlayer ] = useState([]);
+    const [questionData, setQuestionData] = useState([]);
+    const [score, setScore] = useState(0);
 
     useEffect(() => {
         const database = getDatabase(firebase);
@@ -87,6 +88,7 @@ const Questions = () => {
                 key: playerKeys[index],
                 questions: questions[index],
             }));
+            
             // create an empty object to house the updates for each player's data in firebase db
             const updates = {};
             // loop through the array created above and for each player we're adding a new property to the updates object using bracket notation to take advantage of template literals -> the property name is the players key from firebase db, and the value held within the key is the entire player obj itself
@@ -95,19 +97,18 @@ const Questions = () => {
             });
             // once update is called with the arguments dbRef (reference to the game obj in firebase db) and updates (the object created on line 91) the according unique key is matched to the according player in firebase db and is updated with the according questions
             update(dbRef, updates);
+
+           
+            setQuestionData()
         });
     }, []);
 
+    console.log(questionData)
     console.log(player);
-
-
 
     const answersArray = [] //empty array to store all answers
     const correctAnswer = decodeURIComponent(triviaQuestions[questionIndex].correct_answer) //variable for correct answer - move to state
     const incorrectAnswer = triviaQuestions[questionIndex].incorrect_answers //variable for incorrect answers array - also move to state?
-    const [score, setScore] = useState(0)
-
-
 
     //function to display question with questionIndex variable
     const displayQuestion = () => {
@@ -127,37 +128,44 @@ const Questions = () => {
     const handleClick = (e) => {
         setUserAnswer(e.target.value)
     }
+
     
-    //event handler to check if users answer is right and change index number in displayQuestion function so it will display next question in triviaQuestions array
-    // const updateScore = () => {
-    //     const dbRef = ref(getDatabase());
-    //     onValue(dbRef, (dbResponse) => {
-    //         const database = getDatabase(firebase);
-    //         const dbValue = dbResponse.val();
-    //         const score = Object.values(dbValue)[0].score
-    //         console.log(score);
-    //         set(dbValue, {
-    //             score: score +1
-    //         })
-    //     })
+
+    // const updateScore = (score) => {
+    //     const database = getDatabase(firebase)
+    //     const playerScoreRef = ref(database, `${gameKey}/${player.key}`);
+    //     const updateToScore = { score: score }
+    //     const updates = {}
+    //     updates[`/${score}`] = updateToScore;
+    //     update(playerScoreRef, updates)
     // }
 
-    // const updateScore = () => {
-    //     const database = getDatabase(firebase);
-    //     const dbRef = ref(database);
-    //     onValue(dbRef, (dbRes) => {
-    //         const dbVal = dbRes.val();
-    //         const userId = Object.keys(dbVal).map( (e) => {
-    //             return e;
-    //         });
+    // const updates = {};
+    // updates['/'] = ${score};
+    // updates['/user-posts/' + uid + '/' + newPostKey] = postData;
 
-    //         console.log(userId);
-    //     })
-    // }
+    // return update(ref(db), updates);
 
-    // updateScore();
+
 
     const submitAnswer = () => {
+        //capture and increment score (if correct answer chosen), save to state
+        if (userAnswer === correctAnswer) {
+            setScore(score + 1);
+        }
+
+        //update firebase db with new score state
+        // updateScore(score);
+
+        //move on to next question
+        setQuestionIndex(questionIndex + 1);
+
+         //reset radio buttons --> i think the only way to do this is to reset the value of the input, but this would require "answer" to be a piece of state (data changing on the page)
+    }
+    
+    //event handler to check if users answer is right and change index number in displayQuestion function so it will display next question in triviaQuestions array
+   
+    // const submitAnswer = () => {
         // const updateScore = (score) => {
         //     const db = ref(getDatabase(firebase));
         //     const dbRef = ref(db, `/${score}`);
@@ -173,15 +181,15 @@ const Questions = () => {
         //     //     })
         //     // })
         // }
-        const updateScore = () => {
+        // const updateScore = () => {
             // get(player.score).then((snapshot)=>{
             //     let currentCount = snapshot.val();
             //     currentCount = currentCount + 1;
             //     set(score, currentCount);
             // });
-            const database = getDatabase(firebase);
-            const dbRef = ref(database);
-            console.log(dbRef.key)
+            // const database = getDatabase(firebase);
+            // const dbRef = ref(database);
+            // console.log(dbRef.key)
 //                 onValue(dbRef, (dbResponse) => {
 //                     const dbValue = dbResponse.val();
 //                     const score = Object.values(dbValue)[0].score
@@ -195,12 +203,8 @@ const Questions = () => {
 // //                     returnScore();
 //                 });
 
-        };
+    //     };
 
-        return userAnswer === correctAnswer
-            ? (setQuestionIndex(questionIndex + 1),(updateScore())) //eventually add a function to add points for current player
-            : alert('Incorrect. Please try again')
-    }
 
     const currentPlayer = player.slice(0,1)
 
@@ -209,7 +213,7 @@ const Questions = () => {
         <ul className="currentPlayer">
             {
                 currentPlayer.map((player) => {
-                    return <li className="playerInfo" key={player.id}>
+                    return <li className="playerInfo" key={player.key}>
                         <div className="avatarContainer">
                             <img src={player.avatar} alt="player avatar"></img>
                         </div>
