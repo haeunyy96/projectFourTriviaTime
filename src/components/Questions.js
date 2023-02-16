@@ -4,31 +4,20 @@ import { useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
 import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
 import { useCountdown } from 'usehooks-ts'
-
 // initialize state to house an array of all answers
 // initialize state to house the correct answer
 // inititalize state to check the users input
 // onSubmit check to see if users answer is correct
 // intitalize state to house the score
-
 // create object within firebase that holds the game info (per player) -> use that object to push questions & answers from api to then tie this info to the according player  
 
 const Questions = () => {
 
     // Countdown logic
-    const [count, {startCountdown, resetCountdown}] = useCountdown({
+    const [count, { startCountdown, resetCountdown }] = useCountdown({
         countStart: 30,
         intervalMs: 1000
     })
-
-    useEffect(() => {
-        if (count === 0) {
-            setQuestionIndex(questionIndex + 1);
-            resetCountdown();
-            startCountdown();
-        }
-    }, [count])
-
     const [player, setPlayer] = useState([]);
 
     useEffect(() => {
@@ -55,8 +44,13 @@ const Questions = () => {
         startCountdown();
     }, [])
 
-
-
+    useEffect(() => {
+        if (count === 0) {
+            setQuestionIndex(questionIndex + 1);
+            resetCountdown();
+            startCountdown();
+        }
+    }, [count])
 
     console.log(player);
 
@@ -76,23 +70,17 @@ const Questions = () => {
     const correctAnswer = decodeURIComponent(triviaQuestions[questionIndex].correct_answer) //variable for correct answer - move to state
     const incorrectAnswer = triviaQuestions[questionIndex].incorrect_answers //variable for incorrect answers array - also move to state?
     const [score, setScore] = useState(0)
-
-
-
     //function to display question with questionIndex variable
     const displayQuestion = () => {
         return <p>Q. {decodeURIComponent(triviaQuestions[questionIndex].question)}</p>
     }
-
     //function to push correct answer, map through incorrect answer array and push into same array
     const addToAnswersArray = () => {
         answersArray.push(correctAnswer)
-
         incorrectAnswer.map((answer) => {
             answersArray.push(decodeURIComponent(answer))
         })
     }
-
     //event handler to save users answer to state
     const handleClick = (e) => {
         setUserAnswer(e.target.value)
@@ -168,7 +156,7 @@ const Questions = () => {
         };
 
         return (userAnswer === correctAnswer)
-            ? (setQuestionIndex(questionIndex + 1), (updateScore())) //eventually add a function to add points for current player
+            ? (setQuestionIndex(questionIndex + 1), resetCountdown(), startCountdown(),(updateScore())) //eventually add a function to add points for current player
             : alert('Incorrect. Please try again')
     }
 
