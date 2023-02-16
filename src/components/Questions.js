@@ -45,8 +45,6 @@ const Questions = () => {
     // const [answersArray, setAnswersArray] = useState([])
     const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
 
-    const [ dbPlayerKey, setDbPlayerKey ] = useState([]);
-
 
     // passing in props via useLocation function imported from react-router-dom -> info is being passed from Form.js
     const location = useLocation();
@@ -54,41 +52,54 @@ const Questions = () => {
     const gameKey = location.state.gameKey // gameKey is the unique key from firebase db
     const numberOfPlayers = location.state.numberOfPlayers // amount of players passed through form.js
 
+    // create a function to split the questions up between the players in the session -> define two paramaters triviaArray which will be passed in as triviaQuestions & players which will be passed in as numberOfPLayers
     const splitQuestions = (triviaArray, players) => {
+        // create an array to house the slice'd arrays to be able to distribute to players later on
         const questions = [];
+        // calculating how many questions should be given to each player
         const questionsPerPlayer = (triviaArray.length / players);
-
+        // loop through triviaArray & push the slice'd array items to questions array
         for (let i = 0; i < triviaArray.length; i += questionsPerPlayer) {
             questions.push(triviaArray.slice(i, i + questionsPerPlayer));
         }
-
+        // return questions to be used outside of function
         return questions;
     }
 
+    // saving splitQuestion function results to a variable to be reused in a useEffect to store the questions to the players in firebase
     const questions = splitQuestions(triviaQuestions, numberOfPlayers);
 
-    console.log(questions);
+
+    // useEffect being used to run the effect only when the component first mounts -> fetches firebase db and updates players questions based on the questions results stored from the function above
+    useEffect(() => {
+        const database = getDatabase(firebase);
+        const dbRef = ref(database, `${gameKey}`);
+
+        onValue(dbRef, (dbRes) => {
+            const dbValue = dbRes.val();
+            // create an array of player objects from db
+            const players = Object.values(dbValue);
+            // create an array of player keys from db
+            const playerKeys = Object.keys(dbValue);
+            // creates a new array -> ...player copies all the properties from the OG player obj to the new object -> the lines of code that follow add new properties within the copied obj based on the index of the .map function. 
+            const updatedPlayers = players.map((player, index) => ({
+                ...player,
+                key: playerKeys[index],
+                questions: questions[index],
+            }));
+            // create an empty object to house the updates for each player's data in firebase db
+            const updates = {};
+            // loop through the array created above and for each player we're adding a new property to the updates object using bracket notation to take advantage of template literals -> the property name is the players key from firebase db, and the value held within the key is the entire player obj itself
+            updatedPlayers.forEach((player) => {
+                updates[`/${player.key}`] = player;
+            });
+            // once update is called with the arguments dbRef (reference to the game obj in firebase db) and updates (the object created on line 91) the according unique key is matched to the according player in firebase db and is updated with the according questions
+            update(dbRef, updates);
+        });
+    }, []);
+
     console.log(player);
 
-    // const assignQuestions = player.map((playerObject) => {
-    //     const 
-    // })
-
-    Object.keys(player).forEach((playerId, index) => {
-        player[playerId].questions = questions[index]
-    })
-    
-    console.log(player.forEach((e) => {
-        console.log(e);
-    }));
-
-
-    // console.log(playerKeyArray);
-
-    // console.log(triviaQuestions.map( (e) => {
-    //     console.log(e)
-        // console.log("This is the question: " + decodeURIComponent(e.question), "This is the answer: " + decodeURIComponent(e.correct_answer), "These are the wrong answers: " + decodeURIComponent(e.incorrect_answers))
-    // }));
 
 
     const answersArray = [] //empty array to store all answers
