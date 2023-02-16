@@ -16,10 +16,18 @@ import { useCountdown } from 'usehooks-ts'
 const Questions = () => {
 
     // Countdown logic
-    const [count, {startCountdown}] = useCountdown({
+    const [count, {startCountdown, resetCountdown}] = useCountdown({
         countStart: 30,
         intervalMs: 1000
     })
+
+    useEffect(() => {
+        if (count === 0) {
+            setQuestionIndex(questionIndex + 1);
+            resetCountdown();
+            startCountdown();
+        }
+    }, [count])
 
     const [player, setPlayer] = useState([]);
 
@@ -47,12 +55,8 @@ const Questions = () => {
         startCountdown();
     }, [])
 
-    useEffect(()=>{
-        if (count === 0 )   {
-            setQuestionIndex(questionIndex + 1);
-            startCountdown();
-        }
-    },[count])
+
+
 
     console.log(player);
 
