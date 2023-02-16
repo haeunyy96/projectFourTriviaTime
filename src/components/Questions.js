@@ -14,6 +14,8 @@ import { useCountdown } from 'usehooks-ts'
 
 const Questions = () => {
 
+    const [player, setPlayer] = useState([]);
+
     useEffect(() => {
         const database = getDatabase(firebase);
         const dbRef = ref(database, `${gameKey}`);
@@ -39,22 +41,73 @@ const Questions = () => {
     }, [])
 
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
-    // const [correctAnswer, setCorrectAnswer] = useState('');
-    // const [incorrectAnswer, setIncorrectAnswer] = useState('');
-    // const [answersArray, setAnswersArray] = useState([])
     const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
+    const [shuffledAnswers, setShuffledAnswers] = useState([])
 
+    // useLocation
     const location = useLocation();
     const triviaQuestions = location.state.triviaQuestions //trivia question array from api
     const gameKey = location.state.gameKey
     const timer = location.state.timer
+    const numberOfPlayers = location.state.numberOfPlayers
+
+    // logic for shuffling answers
+    useEffect(() => {
+        setShuffledAnswers(shuffleAnswers(answersArray));
+    }, [questionIndex])
+
+    // create a function to split the questions up between the players in the session -> define two paramaters triviaArray which will be passed in as triviaQuestions & players which will be passed in as numberOfPLayers
+    const splitQuestions = (triviaArray, players) => {
+        // create an array to house the slice'd arrays to be able to distribute to players later on
+        const questions = [];
+        // calculating how many questions should be given to each player
+        const questionsPerPlayer = (triviaArray.length / players);
+        // loop through triviaArray & push the slice'd array items to questions array
+        for (let i = 0; i < triviaArray.length; i += questionsPerPlayer) {
+            questions.push(triviaArray.slice(i, i + questionsPerPlayer));
+        }
+        // return questions to be used outside of function
+        return questions;
+    }
+
+    // saving splitQuestion function results to a variable to be reused in a useEffect to store the questions to the players in firebase
+    const questions = splitQuestions(triviaQuestions, numberOfPlayers);
+
+    // useEffect being used to run the effect only when the component first mounts -> fetches firebase db and updates players questions based on the questions results stored from the function above
+    useEffect(() => {
+        const database = getDatabase(firebase);
+        const dbRef = ref(database, `${gameKey}`);
+
+        onValue(dbRef, (dbRes) => {
+            const dbValue = dbRes.val();
+            // create an array of player objects from db
+            const players = Object.values(dbValue);
+            // create an array of player keys from db
+            const playerKeys = Object.keys(dbValue);
+            // creates a new array -> ...player copies all the properties from the OG player obj to the new object -> the lines of code that follow add new properties within the copied obj based on the index of the .map function. 
+            const updatedPlayers = players.map((player, index) => ({
+                ...player,
+                key: playerKeys[index],
+                questions: questions[index],
+            }));
+            // create an empty object to house the updates for each player's data in firebase db
+            const updates = {};
+            // loop through the array created above and for each player we're adding a new property to the updates object using bracket notation to take advantage of template literals -> the property name is the players key from firebase db, and the value held within the key is the entire player obj itself
+            updatedPlayers.forEach((player) => {
+                updates[`/${player.key}`] = player;
+            });
+            // once update is called with the arguments dbRef (reference to the game obj in firebase db) and updates (the object created on line 91) the according unique key is matched to the according player in firebase db and is updated with the according questions
+            update(dbRef, updates);
+        });
+    }, []);
+
+    console.log(player);
 
     // Countdown logic
     const [count, { startCountdown, resetCountdown }] = useCountdown({
         countStart: timer,
         intervalMs: 1000
     })
-    const [player, setPlayer] = useState([]);
 
     useEffect(() => {
         if (count === 0) {
@@ -73,6 +126,7 @@ const Questions = () => {
     const displayQuestion = () => {
         return <p>Q. {decodeURIComponent(triviaQuestions[questionIndex].question)}</p>
     }
+    
     //function to push correct answer, map through incorrect answer array and push into same array
     const addToAnswersArray = () => {
         answersArray.push(correctAnswer)
@@ -80,25 +134,21 @@ const Questions = () => {
             answersArray.push(decodeURIComponent(answer))
         })
     }
+
+    const shuffleAnswers = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]]
+        }
+        return array
+    }
+
     //event handler to save users answer to state
     const handleClick = (e) => {
         setUserAnswer(e.target.value)
     }
 
     //event handler to check if users answer is right and change index number in displayQuestion function so it will display next question in triviaQuestions array
-    // const updateScore = () => {
-    //     const dbRef = ref(getDatabase());
-    //     onValue(dbRef, (dbResponse) => {
-    //         const database = getDatabase(firebase);
-    //         const dbValue = dbResponse.val();
-    //         const score = Object.values(dbValue)[0].score
-    //         console.log(score);
-    //         set(dbValue, {
-    //             score: score +1
-    //         })
-    //     })
-    // }
-
     const updateScore = () => {
         const database = getDatabase(firebase);
         const dbRef = ref(database, `${gameKey}`);
