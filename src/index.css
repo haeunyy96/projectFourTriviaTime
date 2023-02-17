@@ -16,8 +16,13 @@ code {
     monospace;
 }
 
+h2, h3, h4, h5, h6, p {
+  margin: 0
+}
+
 ul {
   list-style: none;
+  padding: 0;
 }
 
 img {
@@ -30,13 +35,42 @@ header {
   font-size: 2rem;
   color:#F0917A;
 }
+hr {
+  border: none;
+  border-top: 2px dotted lightgray;
+  width: 50%;
+  margin-top: 0;
+}
+label {
+  display: block;
+  /* font-family: 'Caveat Brush', sans-serif;
+  font-size: 1.5rem; */
+  /* color: #577F90; */
+  margin: 10px 10px 10px 0;
+}
+select, input {
+  font-family: 'Montserrat', sans-serif;
+  border: #577F90;
+  border-radius: 5px;
+  padding: 4px 5px;
+  margin-right: 10px;
+}
+
+footer {
+  /* position: fixed;
+  bottom: 0; */
+  width: 100%;
+  background-color: #F0917A;
+  color: #fff;
+  margin-top: 50px;
+  padding: 20px 30px;
+}
 
 button {
   background-color: #86C2AE;
   border: 3px solid #86C2AE;
   border-radius: 5px;
   font-family: 'Montserrat', sans-serif;
-  margin-top: 15px;
 }
 
 button:hover,
@@ -47,6 +81,59 @@ button:focus {
   transition: 300ms;
 }
 
+h3 {
+  margin-right: 15px;
+}
+.formDiv {
+  border: 10px solid #86C2AE;
+    background-color: rgba(134, 194, 174, 0.4);
+    border-radius: 15px;
+    margin: 0 auto;
+    width: 80%;
+    margin-top: 50px;
+    padding: 50px 30px 30px 30px;
+}
+.formContainer {
+  display: flex;
+  justify-content: space-between;
+
+}
+
+.playerChoiceForm, .categoryChoiceForm {
+  text-align: left;
+  margin: 0 auto;
+  width: 50%;
+}
+.categoryChoiceForm {
+  text-align: right;
+}
+.verticalLine {
+  border-left: 2px dotted #86C2AE;
+  height: 170px;
+}
+.startButton {
+  margin: 30px 0 0 0;
+}
+.goToQuizButton {
+  margin-top: 15px;
+  padding: 10px 30px;
+  font-size: 1.1rem;
+  /* font-family: 'Caveat Brush', sans-serif; */
+  text-transform: uppercase;
+  background-color: rgba(87, 127, 144, 0.7);
+  border-color: rgba(87, 127, 144, 0.4);
+  color: white;
+
+}
+.goToQuizButton:hover,
+.goToQuizButton:focus {
+  color: #577F90;
+}
+
+.remainingPlayers {
+  color: #577F90;
+  margin-top: 10px;
+}
 .listOfPlayers {
   display: flex;
   flex-direction: column;
@@ -61,7 +148,7 @@ button:focus {
 .playerInfo {
   display: flex;
   align-items: center;
-  width: 25%;
+  width: 70%;
   margin: 10px;
   padding: 10px;
   border: 3px solid #577F90;
@@ -92,3 +179,10 @@ button:focus {
   color: #F0917A;
   text-decoration: none;
 }
+
+.counterTime {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #86C2AE;
+}
+
