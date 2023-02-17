@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
@@ -13,6 +13,7 @@ import { useCountdown } from 'usehooks-ts'
 // create object within firebase that holds the game info (per player) -> use that object to push questions & answers from api to then tie this info to the according player  
 
 const Questions = () => {
+    const navigate = useNavigate();
 
     const [player, setPlayer] = useState([]);
 
@@ -41,10 +42,11 @@ const Questions = () => {
     }, [])
 
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
+    const [playerIndex, setPlayerIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
     const [shuffledAnswers, setShuffledAnswers] = useState([])
 
-    // useLocation
+    // passing in props via useLocation function imported from react-router-dom -> info is being passed from Form.js
     const location = useLocation();
     const triviaQuestions = location.state.triviaQuestions //trivia question array from api
     const gameKey = location.state.gameKey
@@ -101,8 +103,6 @@ const Questions = () => {
         });
     }, []);
 
-    console.log(player);
-
     // Countdown logic
     const [count, { startCountdown, resetCountdown }] = useCountdown({
         countStart: timer,
@@ -111,28 +111,49 @@ const Questions = () => {
 
     useEffect(() => {
         if (count === 0) {
+            alert(`You didn't choose an answer!`);
             setQuestionIndex(questionIndex + 1);
             resetCountdown();
-            startCountdown();
+            setTimeout(() => startCountdown());
+            if (questionIndex === player[playerIndex].questions.length - 1) {
+                setQuestionIndex(0);
+                setScore(0);
+                setPlayerIndex(playerIndex + 1);
+                resetCountdown();
+                startCountdown();
+                if (numberOfPlayers - 1 <= playerIndex) {
+                    alert(`Game over`);
+                    resetGame();
+                    navigate('/');
+                }
+            }
         }
     }, [count])
 
     const answersArray = [] //empty array to store all answers
-    const correctAnswer = decodeURIComponent(triviaQuestions[questionIndex].correct_answer) //variable for correct answer - move to state
-    const incorrectAnswer = triviaQuestions[questionIndex].incorrect_answers //variable for incorrect answers array - also move to state?
+    let correctAnswer = ''; //variable for correct answer
+    let incorrectAnswer = []; //variable for incorrect answers array 
     const [score, setScore] = useState(0)
 
     //function to display question with questionIndex variable
     const displayQuestion = () => {
-        return <p>Q. {decodeURIComponent(triviaQuestions[questionIndex].question)}</p>
+        if (player[playerIndex] !== undefined) {
+            return <p>Q. {decodeURIComponent(player[playerIndex].questions[questionIndex].question)}</p>
+        }
     }
     
     //function to push correct answer, map through incorrect answer array and push into same array
     const addToAnswersArray = () => {
-        answersArray.push(correctAnswer)
-        incorrectAnswer.map((answer) => {
-            answersArray.push(decodeURIComponent(answer))
-        })
+        if (player[playerIndex] !== undefined) {
+            correctAnswer = decodeURIComponent(player[playerIndex].questions[questionIndex].correct_answer)
+            incorrectAnswer = player[playerIndex].questions[questionIndex].incorrect_answers
+
+            answersArray.push(correctAnswer)
+
+            incorrectAnswer.map((answer) => {
+                answersArray.push(decodeURIComponent(answer))
+            })
+        }
     }
 
     const shuffleAnswers = (array) => {
@@ -148,36 +169,51 @@ const Questions = () => {
         setUserAnswer(e.target.value)
     }
 
-    //event handler to check if users answer is right and change index number in displayQuestion function so it will display next question in triviaQuestions array
-    const updateScore = () => {
-        const database = getDatabase(firebase);
-        const dbRef = ref(database, `${gameKey}`);
-        onValue(dbRef, (dbRes) => {
-            const dbVal = dbRes.val();
-            const currentScore = Object.values(dbVal)[0].score
-            // console.log(currentScore)
-            setScore(score => score + 1)
-            // console.log(score)
-            // const addScore = { score }
-            // set(currentScore, addScore);
-        })
-        // set(ref(database, `${gameKey}/`))
+    let currentPlayer = [];
+    if (player[playerIndex] !== undefined) {
+        currentPlayer.push(player[playerIndex]);
     }
-
-    // function updateScore(userId, score) {
-    //     const database = getDatabase(firebase);
-    //     setScore(score => score + 1)
-    //     set(ref(database, `${gameKey}/` + userId), {
-    //         score: `${score}`
-    //     })
-    // }
 
     const submitAnswer = () => {
-        return (userAnswer === correctAnswer)
-            ? (setQuestionIndex(questionIndex + 1), resetCountdown(), startCountdown(),updateScore()) //eventually add a function to add points for current player
-            : alert('Incorrect. Please try again')
+        resetCountdown();
+        startCountdown();
+
+        if (userAnswer === correctAnswer) {
+            setScore(score + 1);
+            setQuestionIndex(questionIndex + 1);
+            player[playerIndex].score = score + 1;
+            if (questionIndex === player[playerIndex].questions.length - 1) {
+                setQuestionIndex(0);
+                setScore(0);
+                setPlayerIndex(playerIndex + 1);
+                if (numberOfPlayers - 1 <= playerIndex) {
+                    alert(`Game over`);
+                    resetGame();
+                    navigate('/');
+                }
+            }
+        } else if (userAnswer !== correctAnswer){
+            alert('Wrong Answer');
+            setQuestionIndex(questionIndex + 1);
+            if (questionIndex === player[playerIndex].questions.length - 1) {
+                setQuestionIndex(0);
+                setScore(0);
+                setPlayerIndex(playerIndex + 1);
+                if (numberOfPlayers - 1 <= playerIndex) {
+                    alert(`Game over`);
+                    resetGame();
+                    navigate('/');
+                }
+            }
+        }
     }
-    const currentPlayer = player.slice(0, 1)
+
+    const resetGame = () => {
+        setQuestionIndex(0);
+        setPlayerIndex(0);
+        setScore(0);
+    }
+
 
     return (
         <>
