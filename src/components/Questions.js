@@ -164,9 +164,6 @@ const Questions = () => {
         return array
     }
 
-    // if (player[playerIndex] !== undefined) {
-    //     console.log(player[playerIndex].questions.length);
-    // }
 
     //event handler to save users answer to state
     const handleClick = (e) => {
