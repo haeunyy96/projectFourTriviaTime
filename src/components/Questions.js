@@ -1,7 +1,8 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
+import App from "../App";
 import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
 
 // initialize state to house an array of all answers
@@ -13,7 +14,8 @@ import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
 // create object within firebase that holds the game info (per player) -> use that object to push questions & answers from api to then tie this info to the according player  
 
 const Questions = () => {
-
+    const navigate = useNavigate();
+    
     const [ player, setPlayer ] = useState([]);
 
     useEffect(() => {
@@ -40,10 +42,12 @@ const Questions = () => {
     },[])
 
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
+    const [playerIndex, setPlayerIndex] = useState(0);
     // const [correctAnswer, setCorrectAnswer] = useState('');
     // const [incorrectAnswer, setIncorrectAnswer] = useState('');
     // const [answersArray, setAnswersArray] = useState([])
     const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
+
 
 
     // passing in props via useLocation function imported from react-router-dom -> info is being passed from Form.js
@@ -98,111 +102,69 @@ const Questions = () => {
         });
     }, []);
 
-    console.log(player);
-
-
-
     const answersArray = [] //empty array to store all answers
-    const correctAnswer = decodeURIComponent(triviaQuestions[questionIndex].correct_answer) //variable for correct answer - move to state
-    const incorrectAnswer = triviaQuestions[questionIndex].incorrect_answers //variable for incorrect answers array - also move to state?
-    const [score, setScore] = useState(0)
-
-
+    let correctAnswer = ''; //variable for correct answer
+    let incorrectAnswer = []; //variable for incorrect answers array 
+    const [score, setScore] = useState(0);
 
     //function to display question with questionIndex variable
     const displayQuestion = () => {
-        return <p>Q. {decodeURIComponent(triviaQuestions[questionIndex].question)}</p>
+        if (player[playerIndex] !== undefined) {
+            return <p>Q. {decodeURIComponent(player[playerIndex].questions[questionIndex].question)}</p>
+        }
     }
 
     //function to push correct answer, map through incorrect answer array and push into same array
     const addToAnswersArray = () => {
-        answersArray.push(correctAnswer)
+        if (player[playerIndex] !== undefined) {
+            correctAnswer = decodeURIComponent(player[playerIndex].questions[questionIndex].correct_answer)
+            incorrectAnswer = player[playerIndex].questions[questionIndex].incorrect_answers
 
-        incorrectAnswer.map((answer) => {
-            answersArray.push(decodeURIComponent(answer))
-        })
+            answersArray.push(correctAnswer)
+    
+            incorrectAnswer.map((answer) => {
+                answersArray.push(decodeURIComponent(answer))
+            })
+        }
     }
+
+    // if (player[playerIndex] !== undefined) {
+    //     console.log(player[playerIndex].questions.length);
+    // }
 
     //event handler to save users answer to state
     const handleClick = (e) => {
         setUserAnswer(e.target.value)
     }
+
+    let currentPlayer = [];
+    if (player[playerIndex] !== undefined) {
+        currentPlayer.push(player[playerIndex]);
+    }
     
-    //event handler to check if users answer is right and change index number in displayQuestion function so it will display next question in triviaQuestions array
-    // const updateScore = () => {
-    //     const dbRef = ref(getDatabase());
-    //     onValue(dbRef, (dbResponse) => {
-    //         const database = getDatabase(firebase);
-    //         const dbValue = dbResponse.val();
-    //         const score = Object.values(dbValue)[0].score
-    //         console.log(score);
-    //         set(dbValue, {
-    //             score: score +1
-    //         })
-    //     })
-    // }
-
-    // const updateScore = () => {
-    //     const database = getDatabase(firebase);
-    //     const dbRef = ref(database);
-    //     onValue(dbRef, (dbRes) => {
-    //         const dbVal = dbRes.val();
-    //         const userId = Object.keys(dbVal).map( (e) => {
-    //             return e;
-    //         });
-
-    //         console.log(userId);
-    //     })
-    // }
-
-    // updateScore();
 
     const submitAnswer = () => {
-        // const updateScore = (score) => {
-        //     const db = ref(getDatabase(firebase));
-        //     const dbRef = ref(db, `/${score}`);
-        //     set(dbRef, {
-        //         score:1
-        //     })
-        //     // onValue(dbRef, (dbResponse) => {
-        //     //     const dbValue = dbResponse.val();
-        //     //     const score = Object.values(dbValue)[0].score
-        //     //     console.log(score);
-        //     //     set(dbValue, {
-        //     //         score: 1
-        //     //     })
-        //     // })
-        // }
-        const updateScore = () => {
-            // get(player.score).then((snapshot)=>{
-            //     let currentCount = snapshot.val();
-            //     currentCount = currentCount + 1;
-            //     set(score, currentCount);
-            // });
-            const database = getDatabase(firebase);
-            const dbRef = ref(database);
-            console.log(dbRef.key)
-//                 onValue(dbRef, (dbResponse) => {
-//                     const dbValue = dbResponse.val();
-//                     const score = Object.values(dbValue)[0].score
-//                     const key = Object.keys(dbValue)[0]
-
-//                     // update(score = score ++)
-// ;                    const returnScore = (score) => {
-//                         const childRef = ref(database, `/${key}`)
-//                         return update(childRef, score +1)
-//                     }
-// //                     returnScore();
-//                 });
-
-        };
-
-        return userAnswer === correctAnswer
-            ? (setQuestionIndex(questionIndex + 1),(updateScore())) //eventually add a function to add points for current player
-            : alert('Incorrect. Please try again')
+        if (userAnswer === correctAnswer){
+            setQuestionIndex(questionIndex + 1);
+            if (questionIndex === player[playerIndex].questions.length - 1) {
+                setQuestionIndex(0);
+                setPlayerIndex(playerIndex + 1);
+                console.log(numberOfPlayers, playerIndex)
+                if (numberOfPlayers - 1 <= playerIndex) {
+                    alert(`Game over`);
+                    resetGame();
+                    navigate('/');
+                }
+            }
+        }
     }
 
-    const currentPlayer = player.slice(0,1)
+    const resetGame = () => {
+        setQuestionIndex(0);
+        setPlayerIndex(0);
+    }
+
+
 
     return (
         <> 
