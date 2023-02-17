@@ -132,8 +132,8 @@ const Questions = () => {
     }, [count])
 
     const answersArray = [] //empty array to store all answers
-    let correctAnswer = ''; //variable for correct answer
-    let incorrectAnswer = []; //variable for incorrect answers array 
+    let correctAnswer = ''; // variable for correct answer
+    let incorrectAnswer = []; // variable for incorrect answers array 
     const [score, setScore] = useState(0)
 
     //function to display question with questionIndex variable
