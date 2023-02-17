@@ -149,7 +149,6 @@ const Questions = () => {
             if (questionIndex === player[playerIndex].questions.length - 1) {
                 setQuestionIndex(0);
                 setPlayerIndex(playerIndex + 1);
-                console.log(numberOfPlayers, playerIndex)
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
