@@ -38,7 +38,7 @@ const Questions = () => {
             }
             createUser();
         })
-        startCountdown();
+        // startCountdown();
     }, [])
 
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
@@ -89,7 +89,7 @@ const Questions = () => {
             const updatedPlayers = players.map((player, index) => ({
                 ...player,
                 key: playerKeys[index],
-                questions: questions[index],
+                questions: questions[index]
             }));
             // create an empty object to house the updates for each player's data in firebase db
             const updates = {};
@@ -101,8 +101,6 @@ const Questions = () => {
             update(dbRef, updates);
         });
     }, []);
-
-    console.log(player);
 
     // Countdown logic
     const [count, { startCountdown, resetCountdown }] = useCountdown({
@@ -121,7 +119,7 @@ const Questions = () => {
     const answersArray = [] //empty array to store all answers
     const correctAnswer = decodeURIComponent(triviaQuestions[questionIndex].correct_answer) //variable for correct answer - move to state
     const incorrectAnswer = triviaQuestions[questionIndex].incorrect_answers //variable for incorrect answers array - also move to state?
-    const [score, setScore] = useState(0)
+    
 
     //function to display question with questionIndex variable
     const displayQuestion = () => {
