@@ -1,18 +1,19 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
 import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
+import { useCountdown } from 'usehooks-ts'
 
 // initialize state to house an array of all answers
 // initialize state to house the correct answer
 // inititalize state to check the users input
 // onSubmit check to see if users answer is correct
 // intitalize state to house the score
-
 // create object within firebase that holds the game info (per player) -> use that object to push questions & answers from api to then tie this info to the according player  
 
 const Questions = () => {
+    const navigate = useNavigate();
 
     const [ player, setPlayer ] = useState([]);
 
@@ -20,16 +21,16 @@ const Questions = () => {
         const database = getDatabase(firebase);
         const dbRef = ref(database, `${gameKey}`);
 
-        onValue(dbRef, (dbResponse)=>{
+        onValue(dbRef, (dbResponse) => {
             const dbValue = dbResponse.val();
             const arrayOfKeys = Object.keys(dbValue);
             const arrayOfUsers = Object.values(dbValue);
             const userArray = [];
             const createUser = () => {
-                arrayOfKeys.map((key, index)=>{
+                arrayOfKeys.map((key, index) => {
                     const userObject = {
                         "keyId": key,
-                        ... arrayOfUsers[index]
+                        ...arrayOfUsers[index]
                     }
                     userArray.push(userObject)
                 })
@@ -37,25 +38,25 @@ const Questions = () => {
             }
             createUser();
         })
-
-    },[])
+        startCountdown();
+    }, [])
 
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
+    const [playerIndex, setPlayerIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
     const [shuffledAnswers, setShuffledAnswers] = useState([])
-    useEffect(() =>{
-        setShuffledAnswers(shuffleAnswers(answersArray));
-    },[questionIndex])
-
-    // const [correctAnswer, setCorrectAnswer] = useState('');
-    // const [incorrectAnswer, setIncorrectAnswer] = useState('');
-
 
     // passing in props via useLocation function imported from react-router-dom -> info is being passed from Form.js
     const location = useLocation();
     const triviaQuestions = location.state.triviaQuestions //trivia question array from api
-    const gameKey = location.state.gameKey // gameKey is the unique key from firebase db
-    const numberOfPlayers = location.state.numberOfPlayers // amount of players passed through form.js
+    const gameKey = location.state.gameKey
+    const timer = location.state.timer
+    const numberOfPlayers = location.state.numberOfPlayers
+
+    // logic for shuffling answers
+    useEffect(() => {
+        setShuffledAnswers(shuffleAnswers(answersArray));
+    }, [questionIndex])
 
     // create a function to split the questions up between the players in the session -> define two paramaters triviaArray which will be passed in as triviaQuestions & players which will be passed in as numberOfPLayers
     const splitQuestions = (triviaArray, players) => {
@@ -73,7 +74,6 @@ const Questions = () => {
 
     // saving splitQuestion function results to a variable to be reused in a useEffect to store the questions to the players in firebase
     const questions = splitQuestions(triviaQuestions, numberOfPlayers);
-
 
     // useEffect being used to run the effect only when the component first mounts -> fetches firebase db and updates players questions based on the questions results stored from the function above
     useEffect(() => {
@@ -103,29 +103,57 @@ const Questions = () => {
         });
     }, []);
 
-    console.log(player);
+    // Countdown logic
+    const [count, { startCountdown, resetCountdown }] = useCountdown({
+        countStart: timer,
+        intervalMs: 1000
+    })
 
-
+    useEffect(() => {
+        if (count === 0) {
+            alert(`You didn't choose an answer!`);
+            setQuestionIndex(questionIndex + 1);
+            resetCountdown();
+            setTimeout(() => startCountdown());
+            if (questionIndex === player[playerIndex].questions.length - 1) {
+                setQuestionIndex(0);
+                setScore(0);
+                setPlayerIndex(playerIndex + 1);
+                resetCountdown();
+                startCountdown();
+                if (numberOfPlayers - 1 <= playerIndex) {
+                    alert(`Game over`);
+                    resetGame();
+                    navigate('/');
+                }
+            }
+        }
+    }, [count])
 
     const answersArray = [] //empty array to store all answers
-    const correctAnswer = decodeURIComponent(triviaQuestions[questionIndex].correct_answer) //variable for correct answer - move to state
-    const incorrectAnswer = triviaQuestions[questionIndex].incorrect_answers //variable for incorrect answers array - also move to state?
+    let correctAnswer = ''; //variable for correct answer
+    let incorrectAnswer = []; //variable for incorrect answers array 
     const [score, setScore] = useState(0)
-
-
 
     //function to display question with questionIndex variable
     const displayQuestion = () => {
-        return <p>Q. {decodeURIComponent(triviaQuestions[questionIndex].question)}</p>
+        if (player[playerIndex] !== undefined) {
+            return <p>Q. {decodeURIComponent(player[playerIndex].questions[questionIndex].question)}</p>
+        }
     }
-
+    
     //function to push correct answer, map through incorrect answer array and push into same array
     const addToAnswersArray = () => {
-        answersArray.push(correctAnswer)
+        if (player[playerIndex] !== undefined) {
+            correctAnswer = decodeURIComponent(player[playerIndex].questions[questionIndex].correct_answer)
+            incorrectAnswer = player[playerIndex].questions[questionIndex].incorrect_answers
 
-        incorrectAnswer.map((answer) => {
-            answersArray.push(decodeURIComponent(answer))
-        })
+            answersArray.push(correctAnswer)
+
+            incorrectAnswer.map((answer) => {
+                answersArray.push(decodeURIComponent(answer))
+            })
+        }
     }
 
     const shuffleAnswers = (array) => {
@@ -140,117 +168,93 @@ const Questions = () => {
     const handleClick = (e) => {
         setUserAnswer(e.target.value)
     }
-    
-    //event handler to check if users answer is right and change index number in displayQuestion function so it will display next question in triviaQuestions array
-    // const updateScore = () => {
-    //     const dbRef = ref(getDatabase());
-    //     onValue(dbRef, (dbResponse) => {
-    //         const database = getDatabase(firebase);
-    //         const dbValue = dbResponse.val();
-    //         const score = Object.values(dbValue)[0].score
-    //         console.log(score);
-    //         set(dbValue, {
-    //             score: score +1
-    //         })
-    //     })
-    // }
 
-    // const updateScore = () => {
-    //     const database = getDatabase(firebase);
-    //     const dbRef = ref(database);
-    //     onValue(dbRef, (dbRes) => {
-    //         const dbVal = dbRes.val();
-    //         const userId = Object.keys(dbVal).map( (e) => {
-    //             return e;
-    //         });
-
-    //         console.log(userId);
-    //     })
-    // }
-
-    // updateScore();
-
-    const submitAnswer = () => {
-        // const updateScore = (score) => {
-        //     const db = ref(getDatabase(firebase));
-        //     const dbRef = ref(db, `/${score}`);
-        //     set(dbRef, {
-        //         score:1
-        //     })
-        //     // onValue(dbRef, (dbResponse) => {
-        //     //     const dbValue = dbResponse.val();
-        //     //     const score = Object.values(dbValue)[0].score
-        //     //     console.log(score);
-        //     //     set(dbValue, {
-        //     //         score: 1
-        //     //     })
-        //     // })
-        // }
-        const updateScore = () => {
-            // get(player.score).then((snapshot)=>{
-            //     let currentCount = snapshot.val();
-            //     currentCount = currentCount + 1;
-            //     set(score, currentCount);
-            // });
-            const database = getDatabase(firebase);
-            const dbRef = ref(database);
-            console.log(dbRef.key)
-//                 onValue(dbRef, (dbResponse) => {
-//                     const dbValue = dbResponse.val();
-//                     const score = Object.values(dbValue)[0].score
-//                     const key = Object.keys(dbValue)[0]
-
-//                     // update(score = score ++)
-// ;                    const returnScore = (score) => {
-//                         const childRef = ref(database, `/${key}`)
-//                         return update(childRef, score +1)
-//                     }
-// //                     returnScore();
-//                 });
-
-        };
-
-        return userAnswer === correctAnswer
-            ? (setQuestionIndex(questionIndex + 1),(updateScore())) //eventually add a function to add points for current player
-            : alert('Incorrect. Please try again')
+    let currentPlayer = [];
+    if (player[playerIndex] !== undefined) {
+        currentPlayer.push(player[playerIndex]);
     }
 
-    const currentPlayer = player.slice(0,1)
+    const submitAnswer = () => {
+        resetCountdown();
+        startCountdown();
+
+        if (userAnswer === correctAnswer) {
+            setScore(score + 1);
+            setQuestionIndex(questionIndex + 1);
+            player[playerIndex].score = score + 1;
+            if (questionIndex === player[playerIndex].questions.length - 1) {
+                setQuestionIndex(0);
+                setScore(0);
+                setPlayerIndex(playerIndex + 1);
+                if (numberOfPlayers - 1 <= playerIndex) {
+                    alert(`Game over`);
+                    resetGame();
+                    navigate('/');
+                }
+            }
+        } else if (userAnswer !== correctAnswer){
+            alert('Wrong Answer');
+            setQuestionIndex(questionIndex + 1);
+            if (questionIndex === player[playerIndex].questions.length - 1) {
+                setQuestionIndex(0);
+                setScore(0);
+                setPlayerIndex(playerIndex + 1);
+                if (numberOfPlayers - 1 <= playerIndex) {
+                    alert(`Game over`);
+                    resetGame();
+                    navigate('/');
+                }
+            }
+        }
+    }
+
+    const resetGame = () => {
+        setQuestionIndex(0);
+        setPlayerIndex(0);
+        setScore(0);
+    }
+
 
     return (
-        <> 
-        <ul className="currentPlayer">
-            {
-                currentPlayer.map((player) => {
-                    return <li className="playerInfo" key={player.id}>
-                        <div className="avatarContainer">
-                            <img src={player.avatar} alt="player avatar"></img>
-                        </div>
-                        <div>
-                            <h3>{player.playerName}</h3>
-                            <p>Your score is: {player.score}/3</p>
-                        </div>
-                    </li>
-                })
-            }
-        </ul>
-        <div className="triviaContainer">
-            <div className="question">
-                {displayQuestion()}
-            </div>
-            <div className="answers">
-                {addToAnswersArray()}
-                    {shuffledAnswers.map((answer, index) => {
-                    return <label htmlFor={answer} key={index}>
-                                <input type="radio" name="trivia" id="answer" value={answer} onClick={handleClick} />
-                                {answer}
-                                <br></br>
-                            </label>
-                })}
-                <button onClick={submitAnswer}>Submit</button>
+        <>
+            <div>
+                <h4>Time Remaining:</h4>
+                <p className="counterTime">{count}</p>
+                <p>seconds</p>
             </div>
 
-        </div>
+            <ul className="currentPlayer">
+                {
+                    currentPlayer.map((player) => {
+                        return <li className="playerInfo" key={player.id}>
+                            <div className="avatarContainer">
+                                <img src={player.avatar} alt="player avatar"></img>
+                            </div>
+                            <div>
+                                <h3>{player.playerName}</h3>
+                                <p>Your score is: {score}/3</p>
+                            </div>
+                        </li>
+                    })
+                }
+            </ul>
+            <div className="triviaContainer">
+                <div className="question">
+                    {displayQuestion()}
+                </div>
+                <div className="answers">
+                    {addToAnswersArray()}
+                    {answersArray.map((answer, index) => {
+                        return <label htmlFor={answer} key={index}>
+                            <input type="radio" name="trivia" id="answer" value={answer} onClick={handleClick} />
+                            {answer}
+                            <br></br>
+                        </label>
+                    })}
+                    <button onClick={submitAnswer}>Submit</button>
+                </div>
+
+            </div>
         </>
     )
 }
