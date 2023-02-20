@@ -186,3 +186,16 @@ h3 {
   color: #86C2AE;
 }
 
+
+/* temporary sizing for img div in leaderboard to control image size while testing code*/
+.leaderboard div {
+  width: 200px;
+  height: 200px;
+}
+
+.leaderboardContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

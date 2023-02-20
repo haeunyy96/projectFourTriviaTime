@@ -1,9 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
 import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
-import { useCountdown } from 'usehooks-ts'
+import { useCountdown } from 'usehooks-ts';
 
 // initialize state to house an array of all answers
 // initialize state to house the correct answer
@@ -126,7 +125,7 @@ const Questions = () => {
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
-                    navigate('/');
+                    navigate('/leaderboard', { state: { gameKey: gameKey}} );
                 }
             }
         }
@@ -135,7 +134,7 @@ const Questions = () => {
     const answersArray = [] //empty array to store all answers
     let correctAnswer = ''; //variable for correct answer
     let incorrectAnswer = []; //variable for incorrect answers array 
-    const [score, setScore] = useState(0)
+
 
     //function to display question with questionIndex variable
     const displayQuestion = () => {
@@ -191,7 +190,7 @@ const Questions = () => {
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
-                    navigate('/');
+                    navigate('/leaderboard', { state: { gameKey: gameKey } });
                 }
             }
         } else if (userAnswer !== correctAnswer){
@@ -204,7 +203,7 @@ const Questions = () => {
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
-                    navigate('/');
+                    navigate('/leaderboard', { state: { gameKey: gameKey } });
                 }
             }
         }
@@ -216,6 +215,7 @@ const Questions = () => {
         setScore(0);
     }
 
+    console.log(player)
 
     return (
         <>
