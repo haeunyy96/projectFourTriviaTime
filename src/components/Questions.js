@@ -103,12 +103,8 @@ const Questions = () => {
     const updateScore = (playerKey) => {
         const database = getDatabase(firebase);
         update(ref(database, `${gameKey}/${playerKey}`), {
-            score: score
+            score: score + 1
         });
-    }
-
-    if (player[playerIndex] !== undefined) {
-        updateScore(player[playerIndex].key);
     }
 
     // Countdown logic
@@ -195,6 +191,7 @@ const Questions = () => {
             setScore(score + 1);
             setQuestionIndex(questionIndex + 1);
             player[playerIndex].score = score + 1;
+            updateScore(player[playerIndex].key);
             if (questionIndex === player[playerIndex].questions.length - 1) {
                 setQuestionIndex(0);
                 setScore(0);
