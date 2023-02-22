@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
+import App from "../App";
 import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
 import { useCountdown } from 'usehooks-ts';
 
@@ -45,7 +46,6 @@ const Questions = () => {
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
     const [playerIndex, setPlayerIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
-    const [shuffledAnswers, setShuffledAnswers] = useState([])
 
     // passing in props via useLocation function imported from react-router-dom -> info is being passed from Form.js
     const location = useLocation();
@@ -54,10 +54,6 @@ const Questions = () => {
     const timer = location.state.timer
     const numberOfPlayers = location.state.numberOfPlayers
 
-    // logic for shuffling answers
-    useEffect(() => {
-        setShuffledAnswers(shuffleAnswers(answersArray));
-    }, [questionIndex])
 
     // create a function to split the questions up between the players in the session -> define two paramaters triviaArray which will be passed in as triviaQuestions & players which will be passed in as numberOfPLayers
     const splitQuestions = (triviaArray, players) => {
@@ -107,12 +103,8 @@ const Questions = () => {
     const updateScore = (playerKey) => {
         const database = getDatabase(firebase);
         update(ref(database, `${gameKey}/${playerKey}`), {
-            score: score
+            score: score + 1
         });
-    }
-
-    if (player[playerIndex] !== undefined) {
-        updateScore(player[playerIndex].key);
     }
 
     // Countdown logic
@@ -161,23 +153,29 @@ const Questions = () => {
             incorrectAnswer = player[playerIndex].questions[questionIndex].incorrect_answers
 
             answersArray.push(correctAnswer)
-
             incorrectAnswer.map((answer) => {
                 answersArray.push(decodeURIComponent(answer))
             })
         }
     }
 
+    addToAnswersArray();
+
+    let shuffledArray = [...answersArray];
+    console.log(shuffledArray);
+
     const shuffleAnswers = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
-            let j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]]
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
         }
-        return array
+        console.log(array);
+        return array;
     }
 
+
     //event handler to save users answer to state
-    const handleClick = (e) => {
+    const handleChange = (e) => {
         setUserAnswer(e.target.value)
     }
 
@@ -187,13 +185,13 @@ const Questions = () => {
     }
 
     const submitAnswer = () => {
-        resetCountdown();
-        startCountdown();
-
-        if (userAnswer === correctAnswer) {
+        if (userAnswer === ''){
+            alert(`You can't submit without choosing an answer...`)
+        } else if (userAnswer === correctAnswer) {
             setScore(score + 1);
             setQuestionIndex(questionIndex + 1);
             player[playerIndex].score = score + 1;
+            updateScore(player[playerIndex].key);
             if (questionIndex === player[playerIndex].questions.length - 1) {
                 setQuestionIndex(0);
                 setScore(0);
@@ -218,6 +216,9 @@ const Questions = () => {
                 }
             }
         }
+        resetCountdown();
+        startCountdown();
+        setUserAnswer('');
     }
 
     const resetGame = () => {
@@ -256,10 +257,9 @@ const Questions = () => {
                     {displayQuestion()}
                 </div>
                 <div className="answers">
-                    {addToAnswersArray()}
                     {answersArray.map((answer, index) => {
                         return <label htmlFor={answer} key={index}>
-                            <input type="radio" name="trivia" id="answer" value={answer} onClick={handleClick} />
+                            <input type="radio" name="trivia" id="answer" value={answer} checked={userAnswer === answer} onChange={handleChange} />
                             {answer}
                             <br></br>
                         </label>
