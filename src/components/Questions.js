@@ -39,7 +39,7 @@ const Questions = () => {
             }
             createUser();
         })
-        // startCountdown();
+        startCountdown();
     }, [])
 
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
