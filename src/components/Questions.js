@@ -100,6 +100,17 @@ const Questions = () => {
         });
     }, []);
 
+    const updateScore = (playerKey) => {
+        const database = getDatabase(firebase);
+        update(ref(database, `${gameKey}/${playerKey}`), {
+            score: score
+        });
+    }
+
+    if (player[playerIndex] !== undefined) {
+        updateScore(player[playerIndex].key);
+    }
+
     // Countdown logic
     const [count, { startCountdown, resetCountdown }] = useCountdown({
         countStart: timer,
