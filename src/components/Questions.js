@@ -1,9 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
 import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
-import { useCountdown } from 'usehooks-ts'
+import { useCountdown } from 'usehooks-ts';
 
 // initialize state to house an array of all answers
 // initialize state to house the correct answer
@@ -15,7 +14,9 @@ import { useCountdown } from 'usehooks-ts'
 const Questions = () => {
     const navigate = useNavigate();
 
-    const [player, setPlayer] = useState([]);
+    const [ player, setPlayer ] = useState([]);
+    const [questionData, setQuestionData] = useState([]);
+    const [score, setScore] = useState(0);
 
     useEffect(() => {
         const database = getDatabase(firebase);
@@ -38,7 +39,7 @@ const Questions = () => {
             }
             createUser();
         })
-        startCountdown();
+        // startCountdown();
     }, [])
 
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
@@ -90,7 +91,7 @@ const Questions = () => {
             const updatedPlayers = players.map((player, index) => ({
                 ...player,
                 key: playerKeys[index],
-                questions: questions[index],
+                questions: questions[index]
             }));
             // create an empty object to house the updates for each player's data in firebase db
             const updates = {};
@@ -124,7 +125,7 @@ const Questions = () => {
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
-                    navigate('/');
+                    navigate('/leaderboard', { state: { gameKey: gameKey}} );
                 }
             }
         }
@@ -133,7 +134,7 @@ const Questions = () => {
     const answersArray = [] //empty array to store all answers
     let correctAnswer = ''; //variable for correct answer
     let incorrectAnswer = []; //variable for incorrect answers array 
-    const [score, setScore] = useState(0)
+
 
     //function to display question with questionIndex variable
     const displayQuestion = () => {
@@ -189,7 +190,7 @@ const Questions = () => {
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
-                    navigate('/');
+                    navigate('/leaderboard', { state: { gameKey: gameKey } });
                 }
             }
         } else if (userAnswer !== correctAnswer){
@@ -202,7 +203,7 @@ const Questions = () => {
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
-                    navigate('/');
+                    navigate('/leaderboard', { state: { gameKey: gameKey } });
                 }
             }
         }
@@ -214,6 +215,7 @@ const Questions = () => {
         setScore(0);
     }
 
+    console.log(player)
 
     return (
         <>
