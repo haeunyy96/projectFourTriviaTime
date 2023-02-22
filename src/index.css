@@ -16,7 +16,12 @@ code {
     monospace;
 }
 
-h2, h3, h4, h5, h6, p {
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
   margin: 0
 }
 
@@ -33,14 +38,16 @@ img {
 header {
   font-family: 'Caveat Brush', sans-serif;
   font-size: 2rem;
-  color:#F0917A;
+  color: #F0917A;
 }
+
 hr {
   border: none;
   border-top: 2px dotted lightgray;
   width: 50%;
   margin-top: 0;
 }
+
 label {
   display: block;
   /* font-family: 'Caveat Brush', sans-serif;
@@ -48,7 +55,9 @@ label {
   /* color: #577F90; */
   margin: 10px 10px 10px 0;
 }
-select, input {
+
+select,
+input {
   font-family: 'Montserrat', sans-serif;
   border: #577F90;
   border-radius: 5px;
@@ -84,36 +93,43 @@ button:focus {
 h3 {
   margin-right: 15px;
 }
+
 .formDiv {
   border: 10px solid #86C2AE;
-    background-color: rgba(134, 194, 174, 0.4);
-    border-radius: 15px;
-    margin: 0 auto;
-    width: 80%;
-    margin-top: 50px;
-    padding: 50px 30px 30px 30px;
+  background-color: rgba(134, 194, 174, 0.4);
+  border-radius: 15px;
+  margin: 0 auto;
+  width: 80%;
+  margin-top: 50px;
+  padding: 50px 30px 30px 30px;
 }
+
 .formContainer {
   display: flex;
   justify-content: space-between;
 
 }
 
-.playerChoiceForm, .categoryChoiceForm {
+.playerChoiceForm,
+.categoryChoiceForm {
   text-align: left;
   margin: 0 auto;
   width: 50%;
 }
+
 .categoryChoiceForm {
   text-align: right;
 }
+
 .verticalLine {
   border-left: 2px dotted #86C2AE;
   height: 170px;
 }
+
 .startButton {
   margin: 30px 0 0 0;
 }
+
 .goToQuizButton {
   margin-top: 15px;
   padding: 10px 30px;
@@ -125,6 +141,7 @@ h3 {
   color: white;
 
 }
+
 .goToQuizButton:hover,
 .goToQuizButton:focus {
   color: #577F90;
@@ -134,17 +151,20 @@ h3 {
   color: #577F90;
   margin-top: 10px;
 }
+
 .listOfPlayers {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   flex-wrap: wrap;
 }
+
 .currentPlayer {
   display: flex;
   justify-content: center;
   padding: 0;
 }
+
 .playerInfo {
   display: flex;
   align-items: center;
@@ -172,9 +192,11 @@ h3 {
   background-color: #577F90;
   color: white;
 }
+
 .question {
   width: 90%;
 }
+
 .headerLink {
   color: #F0917A;
   text-decoration: none;
@@ -186,3 +208,16 @@ h3 {
   color: #86C2AE;
 }
 
+
+/* temporary sizing for img div in leaderboard to control image size while testing code*/
+.leaderboard div {
+  width: 200px;
+  height: 200px;
+}
+
+.leaderboardContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
