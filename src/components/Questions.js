@@ -1,6 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
 import App from "../App";
 import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
@@ -45,7 +44,6 @@ const Questions = () => {
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
     const [playerIndex, setPlayerIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
-    const [shuffledAnswers, setShuffledAnswers] = useState([])
 
     // passing in props via useLocation function imported from react-router-dom -> info is being passed from Form.js
     const location = useLocation();
@@ -54,10 +52,6 @@ const Questions = () => {
     const timer = location.state.timer
     const numberOfPlayers = location.state.numberOfPlayers
 
-    // logic for shuffling answers
-    useEffect(() => {
-        setShuffledAnswers(shuffleAnswers(answersArray));
-    }, [questionIndex])
 
     // create a function to split the questions up between the players in the session -> define two paramaters triviaArray which will be passed in as triviaQuestions & players which will be passed in as numberOfPLayers
     const splitQuestions = (triviaArray, players) => {
@@ -133,7 +127,7 @@ const Questions = () => {
 
     const answersArray = [] //empty array to store all answers
     let correctAnswer = ''; // variable for correct answer
-    let incorrectAnswer = []; // variable for incorrect answers array 
+    let incorrectAnswer = []; // variable for incorrect answers array
     const [score, setScore] = useState(0)
 
     //function to display question with questionIndex variable
@@ -156,17 +150,23 @@ const Questions = () => {
         }
     }
 
+    addToAnswersArray();
+
+    let shuffledArray = [...answersArray];
+    console.log(shuffledArray);
+
     const shuffleAnswers = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
-            let j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]]
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
         }
-        return array
+        console.log(array);
+        return array;
     }
 
 
     //event handler to save users answer to state
-    const handleClick = (e) => {
+    const handleChange = (e) => {
         setUserAnswer(e.target.value)
     }
 
@@ -176,10 +176,9 @@ const Questions = () => {
     }
 
     const submitAnswer = () => {
-        resetCountdown();
-        startCountdown();
-
-        if (userAnswer === correctAnswer) {
+        if (userAnswer === ''){
+            alert(`You can't submit without choosing an answer...`)
+        } else if (userAnswer === correctAnswer) {
             setScore(score + 1);
             setQuestionIndex(questionIndex + 1);
             player[playerIndex].score = score + 1;
@@ -207,6 +206,9 @@ const Questions = () => {
                 }
             }
         }
+        resetCountdown();
+        startCountdown();
+        setUserAnswer('');
     }
 
     const resetGame = () => {
@@ -244,10 +246,9 @@ const Questions = () => {
                     {displayQuestion()}
                 </div>
                 <div className="answers">
-                    {addToAnswersArray()}
                     {answersArray.map((answer, index) => {
                         return <label htmlFor={answer} key={index}>
-                            <input type="radio" name="trivia" id="answer" value={answer} onClick={handleClick} />
+                            <input type="radio" name="trivia" id="answer" value={answer} checked={userAnswer === answer} onChange={handleChange} />
                             {answer}
                             <br></br>
                         </label>
