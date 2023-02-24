@@ -167,30 +167,16 @@ const Questions = () => {
         }
     }
 
-<<<<<<< HEAD
-    const shuffleAnswers = (array) => {
-        for(let i= array.length -1; i >0; i--) {
-            let j = Math.floor(Math.random() * (i +1));
-            [array[i], array[j]] = [array[j], array[i]]
-        }
-        return array
-    }
-=======
     useEffect(() => {
         setShuffledAnswers(shuffleAnswers(answersArray));
     }, [player, questionIndex]);
->>>>>>> 36f240b59863cc7a9cc77381e7459851d217d9b4
 
     //event handler to save users answer to state
     const handleChange = (e) => {
         setUserAnswer(e.target.value)
     }
 
-<<<<<<< HEAD
-    let currentPlayer = [];
-=======
     const currentPlayer = [];
->>>>>>> 36f240b59863cc7a9cc77381e7459851d217d9b4
     if (player[playerIndex] !== undefined) {
         currentPlayer.push(player[playerIndex]);
     }
