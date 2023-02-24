@@ -4,6 +4,7 @@ import firebase from './firebase'; // linking to keep score and displaying playe
 import App from "../App";
 import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
 import { useCountdown } from 'usehooks-ts';
+import Modal from "./Modal";
 
 // initialize state to house an array of all answers
 // initialize state to house the correct answer
@@ -18,6 +19,7 @@ const Questions = () => {
     const [ player, setPlayer ] = useState([]);
     const [questionData, setQuestionData] = useState([]);
     const [score, setScore] = useState(0);
+    const [ openModal, setOpenModal ] = useState(false);
 
     useEffect(() => {
         const database = getDatabase(firebase);
@@ -181,14 +183,19 @@ const Questions = () => {
         currentPlayer.push(player[playerIndex]);
     }
 
+    const addToScore = () => {
+        setScore(score + 1);
+        setQuestionIndex(questionIndex + 1);
+        player[playerIndex].score = score + 1;
+        updateScore(player[playerIndex].key);
+    }
+
     const submitAnswer = () => {
         if (userAnswer === ''){
             alert(`You can't submit without choosing an answer...`)
         } else if (userAnswer === correctAnswer) {
-            setScore(score + 1);
-            setQuestionIndex(questionIndex + 1);
-            player[playerIndex].score = score + 1;
-            updateScore(player[playerIndex].key);
+            setOpenModal(true);
+            addToScore();
             setUserAnswer('');
             if (questionIndex === player[playerIndex].questions.length - 1) {
                 setQuestionIndex(0);
@@ -265,6 +272,11 @@ const Questions = () => {
                         </label>
                     })}
                     <button onClick={submitAnswer}>Submit</button>
+                    {
+                        openModal
+                            ? <Modal closeModal={setOpenModal} />
+                            : null
+                    }
                 </div>
 
             </div>
