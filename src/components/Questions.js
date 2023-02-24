@@ -46,6 +46,7 @@ const Questions = () => {
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
     const [playerIndex, setPlayerIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
+    const [shuffledAnswers, setShuffledAnswers] = useState([]);
 
     // passing in props via useLocation function imported from react-router-dom -> info is being passed from Form.js
     const location = useLocation();
@@ -146,6 +147,13 @@ const Questions = () => {
         }
     }
     
+    const shuffleAnswers = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
     //function to push correct answer, map through incorrect answer array and push into same array
     const addToAnswersArray = () => {
         if (player[playerIndex] !== undefined) {
@@ -159,27 +167,16 @@ const Questions = () => {
         }
     }
 
-    addToAnswersArray();
-
-    let shuffledArray = [...answersArray];
-    console.log(shuffledArray);
-
-    const shuffleAnswers = (array) => {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        console.log(array);
-        return array;
-    }
-
+    useEffect(() => {
+        setShuffledAnswers(shuffleAnswers(answersArray));
+    }, [player, questionIndex]);
 
     //event handler to save users answer to state
     const handleChange = (e) => {
         setUserAnswer(e.target.value)
     }
 
-    let currentPlayer = [];
+    const currentPlayer = [];
     if (player[playerIndex] !== undefined) {
         currentPlayer.push(player[playerIndex]);
     }
@@ -192,10 +189,12 @@ const Questions = () => {
             setQuestionIndex(questionIndex + 1);
             player[playerIndex].score = score + 1;
             updateScore(player[playerIndex].key);
+            setUserAnswer('');
             if (questionIndex === player[playerIndex].questions.length - 1) {
                 setQuestionIndex(0);
                 setScore(0);
                 setPlayerIndex(playerIndex + 1);
+                setUserAnswer('');
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
@@ -205,10 +204,12 @@ const Questions = () => {
         } else if (userAnswer !== correctAnswer){
             alert('Wrong Answer');
             setQuestionIndex(questionIndex + 1);
+            setUserAnswer('');
             if (questionIndex === player[playerIndex].questions.length - 1) {
                 setQuestionIndex(0);
                 setScore(0);
                 setPlayerIndex(playerIndex + 1);
+                setUserAnswer('');
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
@@ -226,8 +227,6 @@ const Questions = () => {
         setPlayerIndex(0);
         setScore(0);
     }
-
-    console.log(player)
 
     return (
         <>
@@ -257,7 +256,8 @@ const Questions = () => {
                     {displayQuestion()}
                 </div>
                 <div className="answers">
-                    {answersArray.map((answer, index) => {
+                    {addToAnswersArray()}
+                    {shuffledAnswers.map((answer, index) => {
                         return <label htmlFor={answer} key={index}>
                             <input type="radio" name="trivia" id="answer" value={answer} checked={userAnswer === answer} onChange={handleChange} />
                             {answer}
