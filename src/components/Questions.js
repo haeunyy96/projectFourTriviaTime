@@ -176,6 +176,8 @@ const Questions = () => {
         return array
     }
 
+    console.log(shuffledAnswers)
+    
     //event handler to save users answer to state
     const handleClick = (e) => {
         setUserAnswer(e.target.value)
