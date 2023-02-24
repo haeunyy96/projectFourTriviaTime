@@ -1,9 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
+import App from "../App";
 import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
-import { useCountdown } from 'usehooks-ts'
+import { useCountdown } from 'usehooks-ts';
 
 // initialize state to house an array of all answers
 // initialize state to house the correct answer
@@ -16,6 +16,8 @@ const Questions = () => {
     const navigate = useNavigate();
 
     const [ player, setPlayer ] = useState([]);
+    const [questionData, setQuestionData] = useState([]);
+    const [score, setScore] = useState(0);
 
     useEffect(() => {
         const database = getDatabase(firebase);
@@ -44,7 +46,7 @@ const Questions = () => {
     const [questionIndex, setQuestionIndex] = useState(0); //state variable for displaying next question in the array
     const [playerIndex, setPlayerIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState('') //state variable for user answer
-    const [shuffledAnswers, setShuffledAnswers] = useState([])
+    const [shuffledAnswers, setShuffledAnswers] = useState([]);
 
     // passing in props via useLocation function imported from react-router-dom -> info is being passed from Form.js
     const location = useLocation();
@@ -53,10 +55,6 @@ const Questions = () => {
     const timer = location.state.timer
     const numberOfPlayers = location.state.numberOfPlayers
 
-    // logic for shuffling answers
-    useEffect(() => {
-        setShuffledAnswers(shuffleAnswers(answersArray));
-    }, [questionIndex])
 
     // create a function to split the questions up between the players in the session -> define two paramaters triviaArray which will be passed in as triviaQuestions & players which will be passed in as numberOfPLayers
     const splitQuestions = (triviaArray, players) => {
@@ -90,7 +88,7 @@ const Questions = () => {
             const updatedPlayers = players.map((player, index) => ({
                 ...player,
                 key: playerKeys[index],
-                questions: questions[index],
+                questions: questions[index]
             }));
             // create an empty object to house the updates for each player's data in firebase db
             const updates = {};
@@ -102,6 +100,13 @@ const Questions = () => {
             update(dbRef, updates);
         });
     }, []);
+
+    const updateScore = (playerKey) => {
+        const database = getDatabase(firebase);
+        update(ref(database, `${gameKey}/${playerKey}`), {
+            score: score + 1
+        });
+    }
 
     // Countdown logic
     const [count, { startCountdown, resetCountdown }] = useCountdown({
@@ -124,7 +129,7 @@ const Questions = () => {
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
-                    navigate('/');
+                    navigate('/leaderboard', { state: { gameKey: gameKey}} );
                 }
             }
         }
@@ -133,7 +138,7 @@ const Questions = () => {
     const answersArray = [] //empty array to store all answers
     let correctAnswer = ''; //variable for correct answer
     let incorrectAnswer = []; //variable for incorrect answers array 
-    const [score, setScore] = useState(0)
+
 
     //function to display question with questionIndex variable
     const displayQuestion = () => {
@@ -142,6 +147,13 @@ const Questions = () => {
         }
     }
     
+    const shuffleAnswers = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
     //function to push correct answer, map through incorrect answer array and push into same array
     const addToAnswersArray = () => {
         if (player[playerIndex] !== undefined) {
@@ -149,13 +161,13 @@ const Questions = () => {
             incorrectAnswer = player[playerIndex].questions[questionIndex].incorrect_answers
 
             answersArray.push(correctAnswer)
-
             incorrectAnswer.map((answer) => {
                 answersArray.push(decodeURIComponent(answer))
             })
         }
     }
 
+<<<<<<< HEAD
     const shuffleAnswers = (array) => {
         for(let i= array.length -1; i >0; i--) {
             let j = Math.floor(Math.random() * (i +1));
@@ -163,49 +175,65 @@ const Questions = () => {
         }
         return array
     }
+=======
+    useEffect(() => {
+        setShuffledAnswers(shuffleAnswers(answersArray));
+    }, [player, questionIndex]);
+>>>>>>> 36f240b59863cc7a9cc77381e7459851d217d9b4
 
     //event handler to save users answer to state
-    const handleClick = (e) => {
+    const handleChange = (e) => {
         setUserAnswer(e.target.value)
     }
 
+<<<<<<< HEAD
     let currentPlayer = [];
+=======
+    const currentPlayer = [];
+>>>>>>> 36f240b59863cc7a9cc77381e7459851d217d9b4
     if (player[playerIndex] !== undefined) {
         currentPlayer.push(player[playerIndex]);
     }
 
     const submitAnswer = () => {
-        resetCountdown();
-        startCountdown();
-
-        if (userAnswer === correctAnswer) {
+        if (userAnswer === ''){
+            alert(`You can't submit without choosing an answer...`)
+        } else if (userAnswer === correctAnswer) {
             setScore(score + 1);
             setQuestionIndex(questionIndex + 1);
             player[playerIndex].score = score + 1;
+            updateScore(player[playerIndex].key);
+            setUserAnswer('');
             if (questionIndex === player[playerIndex].questions.length - 1) {
                 setQuestionIndex(0);
                 setScore(0);
                 setPlayerIndex(playerIndex + 1);
+                setUserAnswer('');
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
-                    navigate('/');
+                    navigate('/leaderboard', { state: { gameKey: gameKey } });
                 }
             }
         } else if (userAnswer !== correctAnswer){
             alert('Wrong Answer');
             setQuestionIndex(questionIndex + 1);
+            setUserAnswer('');
             if (questionIndex === player[playerIndex].questions.length - 1) {
                 setQuestionIndex(0);
                 setScore(0);
                 setPlayerIndex(playerIndex + 1);
+                setUserAnswer('');
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
-                    navigate('/');
+                    navigate('/leaderboard', { state: { gameKey: gameKey } });
                 }
             }
         }
+        resetCountdown();
+        startCountdown();
+        setUserAnswer('');
     }
 
     const resetGame = () => {
@@ -213,7 +241,6 @@ const Questions = () => {
         setPlayerIndex(0);
         setScore(0);
     }
-
 
     return (
         <>
@@ -244,9 +271,9 @@ const Questions = () => {
                 </div>
                 <div className="answers">
                     {addToAnswersArray()}
-                    {answersArray.map((answer, index) => {
+                    {shuffledAnswers.map((answer, index) => {
                         return <label htmlFor={answer} key={index}>
-                            <input type="radio" name="trivia" id="answer" value={answer} onClick={handleClick} />
+                            <input type="radio" name="trivia" id="answer" value={answer} checked={userAnswer === answer} onChange={handleChange} />
                             {answer}
                             <br></br>
                         </label>
