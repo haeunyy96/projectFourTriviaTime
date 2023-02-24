@@ -8,7 +8,6 @@ const UserChoice = ({ numOfPlayers, gameKey }) => {
     const [nameInput, setNameInput] = useState(''); // initializing state to keep track of the input section
     const [disableButton, setDisableButton] = useState(false); // initializing state to keep track of button status
     const [submitCount, setSubmitCount] = useState(numOfPlayers); // initializing state to keep track of how many times player form is submitted
-
     // side effect that runs on component mount -> any updates to the db will be listened for via firebase onValue module
     // store db and create ref to it
     // use onValue to listen for changes within the db and on page load -> whenever changes occur save the players currently within db in state
@@ -61,6 +60,9 @@ const UserChoice = ({ numOfPlayers, gameKey }) => {
         const dbRef = ref(database, `${gameKey}/${playerId}`);
         remove(dbRef);
         setSubmitCount(submitCount + 1)
+        if (submitCount >= 0) {
+            setDisableButton(false);
+        }
     }
 
 

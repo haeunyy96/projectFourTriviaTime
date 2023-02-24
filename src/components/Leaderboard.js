@@ -28,9 +28,9 @@ const Leaderboard = () => {
         })
     }, [])
 
-
+ 
     const arrayOfScores = playersData.map((player) => {
-        return (
+        return(
             player.playerInfo.score
         )
     })
@@ -38,13 +38,13 @@ const Leaderboard = () => {
     const highestScore = Math.max(...arrayOfScores)
 
     const arrayOfWinners = playersData.filter((player) => {
-        if (player.playerInfo.score === highestScore) {
+        if (player.playerInfo.score === highestScore){
             return (
                 player
             )
         }
     })
-
+    
     return (
         <section className="leaderboard">
             <ul className="leaderboardContent">
