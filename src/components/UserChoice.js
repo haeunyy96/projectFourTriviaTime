@@ -60,6 +60,9 @@ const UserChoice = ({ numOfPlayers, gameKey }) => {
         const dbRef = ref(database, `${gameKey}/${playerId}`);
         remove(dbRef);
         setSubmitCount(submitCount + 1)
+        if (submitCount >= 0) {
+            setDisableButton(false);
+        }
     }
 
 
