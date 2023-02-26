@@ -18,8 +18,17 @@ const Form = () => {
 
     const [disableButton, setDisableButton] = useState(false); // initializing state to keep track of button status
 
+    const [playerErrorCheck, setPlayerErrorCheck] = useState('')
+
+    const [errorMessages, setErrorMessages] = useState('')
+    const errors = {
+        players: 'Please enter the amount of players and enter your name',
+        categories: 'Please select a category'
+    }
+
     const handlePlayerChange = (event) => { // function for seeing player change 
         setNumberOfPlayers(event.target.value);
+        handlePlayerError()
     }
     const handleNumberOfPlayersSubmit = (event) => { // function to check if visibilty of userChoice component
         event.preventDefault();
@@ -61,6 +70,10 @@ const Form = () => {
         e.preventDefault()
         if (numberOfPlayers !== '' && userCategorySelection !== 0){
             navigate("/questions", { state: { triviaQuestions: triviaQuestions, gameKey: gameKey, timer: timer, numberOfPlayers: numberOfPlayers } })
+        } else if (numberOfPlayers === '' || numberOfPlayers !== playerErrorCheck) {
+            setErrorMessages('players')
+        } else if (userCategorySelection === 0){
+            setErrorMessages('categories')
         }
     }
 
@@ -87,6 +100,37 @@ const Form = () => {
     const handleTimerChange = (event) => {
         setTimer(event.target.value)
     }
+
+    const deleteAllGames = () => {
+        const database = getDatabase(firebase);
+        const dbRef = ref(database);
+        get(dbRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                const gameObject = snapshot.val()
+                for (const game in gameObject) {
+                    const gameRef = ref(database, game)
+                    remove(gameRef)
+                }
+            }
+        })
+    }
+
+    const handlePlayerError = () => {
+        const database = getDatabase(firebase);
+        const dbRef = ref(database, gameKey);
+        get(dbRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                setPlayerErrorCheck(Object.keys(snapshot.val()).length);
+            }
+        })
+    }
+
+    const errorMessage = (selection)=> {
+        if (selection === 'players')
+            return <p className="error">{errors.players}</p>
+            else if (selection === 'categories')
+            return <p className="error">{errors.categories}</p>
+    };
     return (
         <section>
             <button className="startButton" onClick={gameSession} disabled={disableButton}>Click to Start! 😡</button>
@@ -115,7 +159,7 @@ const Form = () => {
                                 </form>
                                 {
                                     isVisible
-                                        ? <UserChoice numOfPlayers={numberOfPlayers} gameKey={gameKey} />
+                                        ? <UserChoice numOfPlayers={numberOfPlayers} gameKey={gameKey} setPlayerErrorCheck={setPlayerErrorCheck} />
                                         : null
                                 }
                             </div>
@@ -143,11 +187,14 @@ const Form = () => {
                                 </form>
                             </div>
                         </div>
+                        <div className="linkErrorContainer">
                             <Link to="/questions" onClick={goToQuestions}>
                                 <button className="goToQuizButton">Go to Quiz!</button>
                             </Link>
+                            {errorMessage(errorMessages)}
                         </div>
-
+                            <button onClick={()=> deleteAllGames()}>Delete All Games</button>
+                        </div>
                     : null
             }
         </section>

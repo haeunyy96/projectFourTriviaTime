@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import firebase from './firebase';
 import { onValue, ref, getDatabase, remove, push, get, update } from 'firebase/database'
 
-const UserChoice = ({ numOfPlayers, gameKey }) => {
+const UserChoice = ({ numOfPlayers, gameKey, setPlayerErrorCheck }) => {
 
     const [players, setPlayers] = useState([]); // initializing state to house an array of players
     const [nameInput, setNameInput] = useState(''); // initializing state to keep track of the input section
@@ -64,7 +64,6 @@ const UserChoice = ({ numOfPlayers, gameKey }) => {
             setDisableButton(false);
         }
     }
-
 
     return (
         <>

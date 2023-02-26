@@ -140,6 +140,16 @@ h3 {
   color: #577F90;
 }
 
+.error {
+    margin: 10px 0;
+    color: red;
+}
+
+.linkErrorContainer {
+    display: flex;
+    flex-direction: column;
+}
+
 .remainingPlayers {
   color: #577F90;
   margin-top: 10px;
