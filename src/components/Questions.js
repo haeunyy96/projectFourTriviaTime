@@ -240,8 +240,8 @@ const Questions = () => {
             <ul className="currentPlayer">
                 {
                     currentPlayer.map((player) => {
-                        return <li className="playerInfo" key={player.id}>
-                            <div className="avatarContainer">
+                        return <li className="playerInfo questionsPlayerInfo" key={player.id}>
+                            <div className="avatarContainer questionsAvatarContainer">
                                 <img src={player.avatar} alt="player avatar"></img>
                             </div>
                             <div>

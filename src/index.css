@@ -267,7 +267,7 @@ html {
 @import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Montserrat:wght@300;400;700&display=swap');
 
 body {
-  margin: 0;
+  margin: 0 auto;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -301,6 +301,12 @@ img {
   width: 100%;
 }
 
+a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+}
+
 header {
   font-family: 'Caveat Brush', sans-serif;
   font-size: 2rem;
@@ -329,6 +335,7 @@ input {
   border-radius: 5px;
   padding: 4px 5px;
   margin-right: 10px;
+  /* width: 60%; */
 }
 
 footer {
@@ -337,7 +344,7 @@ footer {
   width: 100%;
   background-color: #F0917A;
   color: #fff;
-  margin-top: 50px;
+  margin-top: 30px;
   padding: 20px 30px;
 }
 
@@ -367,7 +374,7 @@ h3 {
   margin: 0 auto;
   width: 80%;
   margin-top: 50px;
-  padding: 50px 30px 30px 30px;
+  padding: 30px;
 }
 
 .formContainer {
@@ -392,25 +399,38 @@ h3 {
   height: 170px;
 }
 
+.horizontalLine {
+  display: none;
+}
 .startButton {
   margin: 30px 0 0 0;
+  padding: 10px 30px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #577F90;
+  border: 3px solid #577F90;
+}
+.startButton:hover,
+.startButton:focus {
+  background-color: rgba(134, 194, 174, 0.9);
+  border: 3px solid rgba(134, 194, 174, 0.4);
 }
 
 .goToQuizButton {
   margin-top: 15px;
   padding: 10px 30px;
   font-size: 1.1rem;
-  /* font-family: 'Caveat Brush', sans-serif; */
   text-transform: uppercase;
-  background-color: rgba(87, 127, 144, 0.7);
-  border-color: rgba(87, 127, 144, 0.4);
   color: white;
-
+  color: #fff;
+  background-color: #577F90;
+  border: 3px solid #577F90;
 }
 
 .goToQuizButton:hover,
 .goToQuizButton:focus {
-  color: #577F90;
+    background-color: rgba(134, 194, 174, 0.9);
+    border: 3px solid rgba(134, 194, 174, 0.4);
 }
 
 .remainingPlayers {
@@ -440,14 +460,16 @@ h3 {
   border: 3px solid #577F90;
   border-radius: 5px;
 }
-
+.questionsPlayerInfo {
+  width: 40%;
+}
 .avatarContainer {
   width: 25%;
   margin-right: 25px;
 }
 
 .triviaContainer {
-  margin: 0 150px;
+  margin: 0 60px;
   padding: 20px 0 30px 0;
   display: flex;
   flex-direction: column;
@@ -486,4 +508,105 @@ h3 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+/* Instruction CSS */
+
+.instructionTitle {
+  font-family: 'Caveat Brush', sans-serif;
+  font-size: 2rem;
+  padding-bottom: 20px;
+}
+
+.instructionList {
+  margin-bottom: 10px;
+}
+
+/* media query */
+@media (max-width: 1070px) {
+  .verticalLine {
+    display: none;
+  }
+    #categoryChoice,
+    #timerChoice {
+    width: 90%;
+  }
+}
+
+@media (max-width: 900px) {
+  .formContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+  .playerChoiceForm,
+  .categoryChoiceForm {
+    text-align: center;
+    margin: 0;
+    width: 100%;
+  }
+  .goToQuizButton {
+    margin-top: 30px;
+  }
+  .listOfPlayers {
+    align-content: center;
+  }
+  #categoryChoice,
+  #timerChoice {
+    width: 60%;
+  }
+  .horizontalLine {
+    display: block;
+    border-top: 2px dotted #86C2AE;
+    width: 60%;
+    height: 5px;
+    margin-top: 15px;
+  }
+}
+
+@media (max-width: 630px) {
+  .formDiv {
+    padding: 10px;
+    width: 90%;
+  }
+    #filtration,
+    #categoryChoice,
+    #timerChoice {
+    display: block;
+    margin: auto;
+    margin-bottom: 10px;
+  }
+  .avatarContainer {
+    margin-right: 5px;
+    width: 100%;
+  }
+  .questionsAvatarContainer {
+    width: 30%;
+  }
+  .questionsPlayerInfo {
+    width: 70%;
+  }
+  .triviaContainer {
+    margin: 0 30px;
+  }
+
+}
+
+@media (max-width: 480px) {
+  #filtration, 
+  #categoryChoice, 
+  #timerChoice {
+    width: 90%;
+  }
+  .avatarContainer {
+    width: 40%;
+  }
+  .questionsAvatarContainer {
+    width: 30%;
+  }
+  .playerInfo {
+    width: 90%;
+  }
+  .questionsPlayerInfo {
+    width: 80%;
+  }
 }
