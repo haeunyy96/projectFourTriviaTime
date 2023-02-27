@@ -180,6 +180,15 @@ h3 {
     border: 3px solid rgba(134, 194, 174, 0.4);
 }
 
+.error {
+    margin: 10px 0;
+    color: red;
+}
+
+.linkErrorContainer {
+    display: flex;
+    flex-direction: column;
+}
 
 .remainingPlayers {
   color: #577F90;
