@@ -5,7 +5,6 @@ import Questions from './components/Questions';
 import Leaderboard from './components/Leaderboard';
 import { Routes, Route } from 'react-router-dom';
 import Footer from './components/Footer';
-import '@fortawesome/fontawesome-svg-core/styles.css'
 
 function App() {
     return (

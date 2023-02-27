@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import UserChoice from "./UserChoice";
 import { Link, useNavigate } from 'react-router-dom';
 import firebase from './firebase';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { onValue, ref, getDatabase, remove, push, get, update, set } from 'firebase/database'
+import { ref, getDatabase, remove, push, get } from 'firebase/database'
 
 const Form = () => {
 
@@ -11,18 +10,14 @@ const Form = () => {
     const [quizCategories, setQuizCategories] = useState([]); // initialized state to hold the list of categories from the api
     const [userCategorySelection, setUserCategorySelection] = useState(0); // initialized state to hold the user choice for user choice which is identified by a number returned from the api
     const [triviaQuestions, setTriviaQuestions] = useState([]); // initialized state to hold returned trivia questions including choices + correct answer --> use this to go through choices to push to an array
-
     const [gameKey, setGameKey] = useState(''); // init state to hold game session key
-
     const [isVisible, setIsVisible] = useState(false);
     const [show, setShow] = useState(false);
     const [showInstruction, setShowInstruction] = useState(true);
-
     const [disableButton, setDisableButton] = useState(false); // initializing state to keep track of button status
-
     const [playerErrorCheck, setPlayerErrorCheck] = useState('')
-
     const [errorMessages, setErrorMessages] = useState('')
+    const [timer, setTimer] = useState(30)
     const errors = {
         players: 'Please enter the amount of players and enter your name',
         categories: 'Please select a category'
@@ -39,6 +34,7 @@ const Form = () => {
     const handleCategoryChange = (event) => { // function for checking the cateogry of which the player has chosen
         setUserCategorySelection(event.target.value)
     }
+
     //api call to populate drop down options for categories in for
     useEffect(() => {
         const url = new URL('https://opentdb.com/api_category.php')
@@ -50,6 +46,7 @@ const Form = () => {
                 setQuizCategories(data.trivia_categories);
             })
     }, [])
+
     //api call to fetch quiz question data based on user category selection
     useEffect(() => {
         const url = new URL('https://opentdb.com/api.php')
@@ -67,10 +64,8 @@ const Form = () => {
             })
     }, [userCategorySelection])
 
-    // console.log(triviaQuestions)
     //trivia questions get saved to state and then passed down - I feel like we should shuffle them here...
     //
-
     const navigate = useNavigate()
 
     const goToQuestions = (e) => { // function to reroute to questions component while also passing state via navigate
@@ -86,24 +81,17 @@ const Form = () => {
 
     const gameSession = (e) => {
         e.preventDefault()
-
         const database = getDatabase(firebase);
         const dbRef = ref(database);
-
         const gameId = ''
-
         const playerObject = push(dbRef, gameId)
         setGameKey(playerObject.key);
-
         // use playerObject.key.[player1, player2, player etc..] to add player info to the game session object in firebase
-
         setShow(!show);
         setShowInstruction(!showInstruction);
         setDisableButton(true);
         return playerObject;
     }
-
-    const [timer, setTimer] = useState(30)
 
     const handleTimerChange = (event) => {
         setTimer(event.target.value)
@@ -141,7 +129,7 @@ const Form = () => {
                 <>
                 <ul className="formDiv">
                     <li className="instructionTitle">How to play:</li>
-                    <li className="instructionList"><FontAwesomeIcon icon="fa-solid fa-circle-1" /> 1. Choose the <strong>number of players 👥</strong> and <strong>add your names!</strong></li>
+                    <li className="instructionList">1. Choose the <strong>number of players 👥</strong> and <strong>add your names!</strong></li>
                     <li className="instructionList">2. Choose a <strong>quiz category</strong> and select the <strong>level of difficulty 😬</strong></li>
                     <li className="instructionList">3. Each person will get <strong>3 questions</strong> based on the chosen category</li>
                     <li className="instructionList">4. The <strong>timer</strong> will run for <strong>15, 30 or 60 seconds</strong> based on the chosen level of difficulty</li>

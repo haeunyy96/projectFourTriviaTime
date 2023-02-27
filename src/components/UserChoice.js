@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import firebase from './firebase';
-import { onValue, ref, getDatabase, remove, push, get, update } from 'firebase/database'
+import { onValue, ref, getDatabase, remove, push } from 'firebase/database'
 
 const UserChoice = ({ numOfPlayers, gameKey, handlePlayerError }) => {
 
@@ -36,14 +36,12 @@ const UserChoice = ({ numOfPlayers, gameKey, handlePlayerError }) => {
         event.preventDefault();
         const database = getDatabase(firebase);
         const dbRef = ref(database, `${gameKey}`);
-
         const playerInfo = {
                 playerName: nameInput,
                 avatar: `https://api.dicebear.com/5.x/thumbs/svg?seed=${nameInput}`,
                 score: 0,
                 questions: ['']
             }
-
         if (nameInput !== '' && isNaN(nameInput)) {
             push(dbRef, playerInfo);
             setSubmitCount(submitCount - 1);
