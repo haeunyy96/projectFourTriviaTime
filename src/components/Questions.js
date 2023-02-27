@@ -54,7 +54,7 @@ const Questions = () => {
     const gameKey = location.state.gameKey
     const timer = location.state.timer
     const numberOfPlayers = location.state.numberOfPlayers
-
+    const numberOfQuestions= location.state.numberOfQuestions
 
     // create a function to split the questions up between the players in the session -> define two paramaters triviaArray which will be passed in as triviaQuestions & players which will be passed in as numberOfPLayers
     const splitQuestions = (triviaArray, players) => {
@@ -129,7 +129,7 @@ const Questions = () => {
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
-                    navigate('/leaderboard', { state: { gameKey: gameKey}} );
+                    navigate('/leaderboard', { state: { gameKey: gameKey, numberOfQuestions: numberOfQuestions }} );
                 }
             }
         }
@@ -200,7 +200,7 @@ const Questions = () => {
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
-                    navigate('/leaderboard', { state: { gameKey: gameKey } });
+                    navigate('/leaderboard', { state: { gameKey: gameKey, numberOfQuestions: numberOfQuestions } });
                 }
             }
         } else if (userAnswer !== correctAnswer){
@@ -215,7 +215,7 @@ const Questions = () => {
                 if (numberOfPlayers - 1 <= playerIndex) {
                     alert(`Game over`);
                     resetGame();
-                    navigate('/leaderboard', { state: { gameKey: gameKey } });
+                    navigate('/leaderboard', { state: { gameKey: gameKey, numberOfQuestions: numberOfQuestions } });
                 }
             }
         }
@@ -247,7 +247,7 @@ const Questions = () => {
                             </div>
                             <div>
                                 <h3>{player.playerName}</h3>
-                                <p>Your score is: {score}/3</p>
+                                <p>Your score is: {score}/{numberOfQuestions}</p>
                             </div>
                         </li>
                     })

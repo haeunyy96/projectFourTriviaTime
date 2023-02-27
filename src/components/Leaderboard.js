@@ -9,6 +9,7 @@ const Leaderboard = () => {
 
     const location = useLocation();
     const gameKey = location.state.gameKey
+    const numberOfQuestions = location.state.numberOfQuestions
     const [playersData, setPlayersData] = useState([])
 
     useEffect(() => {
@@ -58,7 +59,7 @@ const Leaderboard = () => {
                                     <h3>Winner!</h3>
                                     <div className="playerNameScore">
                                         <h4>{player.playerInfo.playerName}:</h4>
-                                        <h5>{player.playerInfo.score}/3</h5>
+                                        <h5>{player.playerInfo.score}/{numberOfQuestions}</h5>
                                     </div>
                                 </div>
                             </li>

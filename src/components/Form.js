@@ -7,6 +7,7 @@ import { ref, getDatabase, remove, push, get } from 'firebase/database'
 const Form = () => {
 
     const [numberOfPlayers, setNumberOfPlayers] = useState(''); // initailizing state to house how many players are playing
+    const [numberOfQuestions, setNumberOfQuestions] = useState(3)
     const [quizCategories, setQuizCategories] = useState([]); // initialized state to hold the list of categories from the api
     const [userCategorySelection, setUserCategorySelection] = useState(0); // initialized state to hold the user choice for user choice which is identified by a number returned from the api
     const [triviaQuestions, setTriviaQuestions] = useState([]); // initialized state to hold returned trivia questions including choices + correct answer --> use this to go through choices to push to an array
@@ -20,12 +21,12 @@ const Form = () => {
     const [timer, setTimer] = useState(30)
     const errors = {
         players: 'Please enter the amount of players and enter your name',
-        categories: 'Please select a category'
+        categories: 'Please select a category',
+        questions: 'Please enter the number of questions you would like (between 3 and 12)'
     }
 
     const handlePlayerChange = (event) => { // function for seeing player change 
         setNumberOfPlayers(event.target.value);
-        handlePlayerError()
     }
     const handleNumberOfPlayersSubmit = (event) => { // function to check if visibilty of userChoice component
         event.preventDefault();
@@ -33,6 +34,11 @@ const Form = () => {
     }
     const handleCategoryChange = (event) => { // function for checking the cateogry of which the player has chosen
         setUserCategorySelection(event.target.value)
+    }
+    const handleNumberOfQuestions = (event) => {
+        event.preventDefault()
+        event.target.value > 12 || event.target.value < 3 || event.target.value === '' ? setErrorMessages('questions')
+        : setNumberOfQuestions(event.target.value)
     }
 
     //api call to populate drop down options for categories in for
@@ -51,7 +57,7 @@ const Form = () => {
     useEffect(() => {
         const url = new URL('https://opentdb.com/api.php')
         url.search = new URLSearchParams({
-            amount: numberOfPlayers * 3,
+            amount: numberOfPlayers * numberOfQuestions,
             category: userCategorySelection,
             encode: 'url3986'
         })
@@ -71,7 +77,7 @@ const Form = () => {
     const goToQuestions = (e) => { // function to reroute to questions component while also passing state via navigate
         e.preventDefault()
         if (numberOfPlayers === playerErrorCheck && userCategorySelection !== 0){
-            navigate("/questions", { state: { triviaQuestions: triviaQuestions, gameKey: gameKey, timer: timer, numberOfPlayers: numberOfPlayers } })
+            navigate("/questions", { state: { triviaQuestions: triviaQuestions, gameKey: gameKey, timer: timer, numberOfPlayers: numberOfPlayers, numberOfQuestions: numberOfQuestions } })
         } else if (numberOfPlayers === '' || playerErrorCheck != numberOfPlayers) {
             setErrorMessages('players')
         } else if (userCategorySelection === 0){
@@ -116,10 +122,13 @@ const Form = () => {
     }
 
     const errorMessage = (selection)=> {
-        if (selection === 'players')
+        if (selection === 'players'){
             return <p className="error">{errors.players}</p>
-            else if (selection === 'categories')
+        } else if (selection === 'categories'){
             return <p className="error">{errors.categories}</p>
+        } else if (selection === 'questions'){
+            return <p className="error">{errors.questions}</p>
+        }
     };
     return (
         <section>
@@ -183,6 +192,8 @@ const Form = () => {
                                             })
                                         }
                                     </select>
+                                    <label htmlFor="quantity">Choose number of questions (between 3 and 12):</label>
+                                    <input type="number" id="quantity" name="quantity" min="3" max="12" placeholder="Select number" onChange={handleNumberOfQuestions}></input>
                                 </form>
                                 <form action="">
                                     <label htmlFor="timerChoice">Choose the Level of Difficulty</label>
