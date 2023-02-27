@@ -9,7 +9,7 @@ const Leaderboard = () => {
 
     const location = useLocation();
     const gameKey = location.state.gameKey
-
+    const numberOfQuestions = location.state.numberOfQuestions
     const [playersData, setPlayersData] = useState([])
 
     useEffect(() => {
@@ -27,7 +27,6 @@ const Leaderboard = () => {
             setPlayersData(arrayOfPlayers);
         })
     }, [])
-
 
     //find highest scores by creating an array of the scores stored in playersData array and then use Math.max to find the highest score in this array and save it to a variable
     const arrayOfScores = playersData.map((player) => {
@@ -60,7 +59,7 @@ const Leaderboard = () => {
                                     <h3>Winner!</h3>
                                     <div className="playerNameScore">
                                         <h4>{player.playerInfo.playerName}:</h4>
-                                        <h5>{player.playerInfo.score}/3</h5>
+                                        <h5>{player.playerInfo.score}/{numberOfQuestions}</h5>
                                     </div>
                                 </div>
                             </li>
