@@ -77,4 +77,8 @@ const Leaderboard = () => {
     );
 }
 
+<<<<<<< HEAD
 export default Leaderboard;
+=======
+export default Leaderboard;
+>>>>>>> 17ad2f0922a1c884b70b9b20aad1b77dd22a3d5a

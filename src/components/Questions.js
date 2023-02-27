@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> 17ad2f0922a1c884b70b9b20aad1b77dd22a3d5a
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
