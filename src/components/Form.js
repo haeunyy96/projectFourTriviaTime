@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import UserChoice from "./UserChoice";
 import { Link, useNavigate } from 'react-router-dom';
 import firebase from './firebase';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { onValue, ref, getDatabase, remove, push, get, update, set } from 'firebase/database'
 
 const Form = () => {
@@ -15,6 +16,7 @@ const Form = () => {
 
     const [isVisible, setIsVisible] = useState(false);
     const [show, setShow] = useState(false);
+    const [showInstruction, setShowInstruction] = useState(true);
 
     const [disableButton, setDisableButton] = useState(false); // initializing state to keep track of button status
 
@@ -64,6 +66,11 @@ const Form = () => {
                 setTriviaQuestions(data.results)
             })
     }, [userCategorySelection])
+
+    // console.log(triviaQuestions)
+    //trivia questions get saved to state and then passed down - I feel like we should shuffle them here...
+    //
+
     const navigate = useNavigate()
 
     const goToQuestions = (e) => { // function to reroute to questions component while also passing state via navigate
@@ -91,6 +98,7 @@ const Form = () => {
         // use playerObject.key.[player1, player2, player etc..] to add player info to the game session object in firebase
 
         setShow(!show);
+        setShowInstruction(!showInstruction);
         setDisableButton(true);
         return playerObject;
     }
@@ -127,7 +135,24 @@ const Form = () => {
     };
     return (
         <section>
-            <button className="startButton" onClick={gameSession} disabled={disableButton}>Click to Start! 😡</button>
+            {
+                showInstruction
+                ?
+                <>
+                <ul className="formDiv">
+                    <li className="instructionTitle">How to play:</li>
+                    <li className="instructionList"><FontAwesomeIcon icon="fa-solid fa-circle-1" /> 1. Choose the <strong>number of players 👥</strong> and <strong>add your names!</strong></li>
+                    <li className="instructionList">2. Choose a <strong>quiz category</strong> and select the <strong>level of difficulty 😬</strong></li>
+                    <li className="instructionList">3. Each person will get <strong>3 questions</strong> based on the chosen category</li>
+                    <li className="instructionList">4. The <strong>timer</strong> will run for <strong>15, 30 or 60 seconds</strong> based on the chosen level of difficulty</li>
+                    <li className="instructionList">5. At the end of the game, the <strong>🏆 WINNER 🏆</strong> will be announced!</li>
+                    <li className="instructionList">6. CLICK BELOW TO PLAY!!!</li>
+                </ul>
+                <button className="startButton" onClick={gameSession} disabled={disableButton}>CLICK TO START!</button>
+                </>
+                :null
+            }
+
             {
                 show
                     ? 
@@ -135,8 +160,8 @@ const Form = () => {
                         <div className="formContainer">
                             <div className='playerChoiceForm'>
                                 <form action="" onSubmit={(event) => handleNumberOfPlayersSubmit(event, numberOfPlayers)}>
-                                    <label htmlFor="filtration">Choose a Number of Players</label>
-                                    <select required id="filtration" defaultValue={'placeholder'} onChange={handlePlayerChange}>
+                                    <label htmlFor="filtration">Choose a Number of Players:</label>
+                                    <select id="filtration" defaultValue={'placeholder'} onChange={handlePlayerChange}>
                                         <option value="placeholder" disabled>Select amount of players</option>
                                         <option value="1">1 Player</option>
                                         <option value="2">2 Players</option>
@@ -158,6 +183,7 @@ const Form = () => {
                                 }
                             </div>
                             <div className="verticalLine"></div>
+                            <div className="horizontalLine"></div>
                             <div className="categoryChoiceForm">
                                 <form action="">
                                     <label htmlFor="categoryChoice">Choose a Quiz Category</label>

@@ -28,7 +28,8 @@ const Leaderboard = () => {
         })
     }, [])
 
- 
+
+    //find highest scores by creating an array of the scores stored in playersData array and then use Math.max to find the highest score in this array and save it to a variable
     const arrayOfScores = playersData.map((player) => {
         return(
             player.playerInfo.score
@@ -37,42 +38,54 @@ const Leaderboard = () => {
 
     const highestScore = Math.max(...arrayOfScores)
 
-    const arrayOfWinners = playersData.filter((player) => {
-        if (player.playerInfo.score === highestScore){
-            return (
-                player
-            )
-        }
-    })
+    //sort players in descending order by score
+    let sortedScores = playersData.sort(
+        (a, b) => (a.playerInfo.score < b.playerInfo.score) ? 1 : (a.playerInfo.score > b.playerInfo.score) ? -1 : 0);
     
+
+    //inside component return, map through sortedScores, if player.playerInfo.score === highestScore, add className='winner' to the li that's returned else add className 'loser'
     return (
         <section className="leaderboard">
+            <h2>Leader Board</h2>
             <ul className="leaderboardContent">
                 {
-                    arrayOfWinners.length > 1
-                        ? arrayOfWinners.map((player) => {
+                    sortedScores.map((player) => {
+                        if (player.playerInfo.score === highestScore){
+                        return (
+                           <li key={player.id} className="winner">
+                                <div className="playerScoreAvatar">
+                                    <img src={player.playerInfo.avatar} alt={`Trivia winner's avatar`} />
+                                </div>
+                                <div className="playerScoreInfo">
+                                    <h3>Winner!</h3>
+                                    <div className="playerNameScore">
+                                        <h4>{player.playerInfo.playerName}:</h4>
+                                        <h5>{player.playerInfo.score}/3</h5>
+                                    </div>
+                                </div>
+                            </li>
+                        )} else {
                             return (
-                                <li key={player.id}>
-                                    <div><img src={player.playerInfo.avatar} alt={`Trivia winner's avatar`} /></div>
-                                    <h4>{player.playerInfo.playerName}</h4>
+                                <li key={player.id} className="loser">
+                                    <div className="playerScoreAvatar">
+                                        <img src={player.playerInfo.avatar} alt={`Trivia winner's avatar`} />
+                                    </div>
+                                    <div className="playerScoreInfo">
+                                        <h3>Better luck next time!</h3>
+                                        <div className="playerNameScore">
+                                            <h4>{player.playerInfo.playerName}:</h4>
+                                            <h5>{player.playerInfo.score}/3</h5>
+                                        </div>
+                                    </div>
                                 </li>
                             )
-                        })
-                        : arrayOfWinners.map((player) => {
-                            return (
-                                <li key={player.id}>
-                                    <div><img src={player.playerInfo.avatar} alt={`Trivia winner's avatar`} /></div>
-                                    <h4>{player.playerInfo.playerName} is the winner!</h4>
-                                </li>
-                            )
-                        })
+                        }
+                    })
                 }
-                <li>
-                    <Link to='/'>
-                        <button>Start a New Game!</button>
-                    </Link>
-                </li>
             </ul>
+            <Link to='/'>
+                <button className="newGameButton">Start a New Game!</button>
+            </Link>
         </section>
     );
 }
