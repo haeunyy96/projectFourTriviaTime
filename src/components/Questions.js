@@ -171,6 +171,8 @@ const Questions = () => {
         setShuffledAnswers(shuffleAnswers(answersArray));
     }, [player, questionIndex]);
 
+    // console.log(shuffledAnswers)
+    
     //event handler to save users answer to state
     const handleChange = (e) => {
         setUserAnswer(e.target.value)
