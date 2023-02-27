@@ -68,9 +68,9 @@ const Form = () => {
 
     const goToQuestions = (e) => { // function to reroute to questions component while also passing state via navigate
         e.preventDefault()
-        if (numberOfPlayers !== '' && userCategorySelection !== 0){
+        if (numberOfPlayers === playerErrorCheck && userCategorySelection !== 0){
             navigate("/questions", { state: { triviaQuestions: triviaQuestions, gameKey: gameKey, timer: timer, numberOfPlayers: numberOfPlayers } })
-        } else if (numberOfPlayers === '' || numberOfPlayers !== playerErrorCheck) {
+        } else if (numberOfPlayers === '' || playerErrorCheck != numberOfPlayers) {
             setErrorMessages('players')
         } else if (userCategorySelection === 0){
             setErrorMessages('categories')
@@ -115,14 +115,8 @@ const Form = () => {
         })
     }
 
-    const handlePlayerError = () => {
-        const database = getDatabase(firebase);
-        const dbRef = ref(database, gameKey);
-        get(dbRef).then((snapshot) => {
-            if (snapshot.exists()) {
-                setPlayerErrorCheck(Object.keys(snapshot.val()).length);
-            }
-        })
+    const handlePlayerError = (num) => {
+        setPlayerErrorCheck(`${num}`)
     }
 
     const errorMessage = (selection)=> {
@@ -142,7 +136,7 @@ const Form = () => {
                             <div className='playerChoiceForm'>
                                 <form action="" onSubmit={(event) => handleNumberOfPlayersSubmit(event, numberOfPlayers)}>
                                     <label htmlFor="filtration">Choose a Number of Players</label>
-                                    <select id="filtration" defaultValue={'placeholder'} onChange={handlePlayerChange}>
+                                    <select required id="filtration" defaultValue={'placeholder'} onChange={handlePlayerChange}>
                                         <option value="placeholder" disabled>Select amount of players</option>
                                         <option value="1">1 Player</option>
                                         <option value="2">2 Players</option>
@@ -159,7 +153,7 @@ const Form = () => {
                                 </form>
                                 {
                                     isVisible
-                                        ? <UserChoice numOfPlayers={numberOfPlayers} gameKey={gameKey} setPlayerErrorCheck={setPlayerErrorCheck} />
+                                        ? <UserChoice numOfPlayers={numberOfPlayers} gameKey={gameKey} handlePlayerError={handlePlayerError} />
                                         : null
                                 }
                             </div>
@@ -167,7 +161,7 @@ const Form = () => {
                             <div className="categoryChoiceForm">
                                 <form action="">
                                     <label htmlFor="categoryChoice">Choose a Quiz Category</label>
-                                    <select id="categoryChoice" defaultValue={'placeholder'} onChange={handleCategoryChange}>
+                                    <select required id="categoryChoice" defaultValue={'placeholder'} onChange={handleCategoryChange}>
                                         <option value="placeholder" disabled>Select Category</option>
                                         {
                                             quizCategories.map((quizCategory) => {
@@ -178,7 +172,7 @@ const Form = () => {
                                 </form>
                                 <form action="">
                                     <label htmlFor="timerChoice">Choose the Level of Difficulty</label>
-                                    <select id="timerChoice" defaultValue={'placeholder'} onChange={handleTimerChange}>
+                                    <select required id="timerChoice" defaultValue={'placeholder'} onChange={handleTimerChange}>
                                         <option value="placeholder" disabled>Select time</option>
                                         <option value="60">Easy (60 seconds)</option>
                                         <option value="30">Moderate (30 seconds)</option>
@@ -188,8 +182,8 @@ const Form = () => {
                             </div>
                         </div>
                         <div className="linkErrorContainer">
-                            <Link to="/questions" onClick={goToQuestions}>
-                                <button className="goToQuizButton">Go to Quiz!</button>
+                            <Link to="/questions">
+                                <button className="goToQuizButton" onClick={goToQuestions}>Go to Quiz!</button>
                             </Link>
                             {errorMessage(errorMessages)}
                         </div>
