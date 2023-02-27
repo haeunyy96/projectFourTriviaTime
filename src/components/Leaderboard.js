@@ -91,22 +91,3 @@ const Leaderboard = () => {
 }
 
 export default Leaderboard;
-
-
-//LEADERBOARD REFACTOR
-
-//player avatar, name, scores are displayed in descending order of score with the highest scores being labelled "Winner" (apply different styling)
-
-//create a function that defines the sorting order to be used in sort() method on the array of player data
-
-//map through this sorted array to display on the page, giving the higher scores different styling
-
-//if arrayOfWinners includes(player), add this classname and style differently
-
-
-
-// const winnerStyling = (arrayOfWinners) => {
-//     sortedScores.includes(arrayOfWinners)
-//     ? 
-//     : ""
-// }
