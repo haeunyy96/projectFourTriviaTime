@@ -57,6 +57,11 @@ const Form = () => {
                 setTriviaQuestions(data.results)
             })
     }, [userCategorySelection])
+
+    // console.log(triviaQuestions)
+    //trivia questions get saved to state and then passed down - I feel like we should shuffle them here...
+    //
+
     const navigate = useNavigate()
 
     const goToQuestions = (e) => { // function to reroute to questions component while also passing state via navigate
