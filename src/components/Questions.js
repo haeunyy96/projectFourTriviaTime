@@ -1,8 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import firebase from './firebase'; // linking to keep score and displaying player
-import App from "../App";
-import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
+import { getDatabase, ref, onValue, update } from "firebase/database";
 import { useCountdown } from 'usehooks-ts';
 
 // initialize state to house an array of all answers
@@ -16,7 +15,6 @@ const Questions = () => {
     const navigate = useNavigate();
 
     const [ player, setPlayer ] = useState([]);
-    const [questionData, setQuestionData] = useState([]);
     const [score, setScore] = useState(0);
 
     useEffect(() => {
@@ -258,15 +256,19 @@ const Questions = () => {
                     {displayQuestion()}
                 </div>
                 <div className="answers">
+                    <ul>
                     {addToAnswersArray()}
                     {shuffledAnswers.map((answer, index) => {
-                        return <label htmlFor={answer} key={index}>
+                        return <li  key={index}>
+                            <label htmlFor={answer}>
                             <input type="radio" name="trivia" id="answer" value={answer} checked={userAnswer === answer} onChange={handleChange} />
                             {answer}
                             <br></br>
-                        </label>
+                            </label>
+                            </li>
                     })}
                     <button onClick={submitAnswer}>Submit</button>
+                    </ul>
                 </div>
 
             </div>

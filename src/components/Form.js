@@ -36,9 +36,7 @@ const Form = () => {
         setUserCategorySelection(event.target.value)
     }
     const handleNumberOfQuestions = (event) => {
-        event.preventDefault()
-        event.target.value > 12 || event.target.value < 3 || event.target.value === '' ? setErrorMessages('questions')
-        : setNumberOfQuestions(event.target.value)
+        setNumberOfQuestions(event.target.value)
     }
 
     //api call to populate drop down options for categories in for
