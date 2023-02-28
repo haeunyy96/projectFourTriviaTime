@@ -4,13 +4,11 @@ import { onValue, ref, getDatabase, remove, push } from 'firebase/database'
 
 const UserChoice = ({ numOfPlayers, gameKey, handlePlayerError }) => {
 
-    const [players, setPlayers] = useState([]); // initializing state to house an array of players
-    const [nameInput, setNameInput] = useState(''); // initializing state to keep track of the input section
-    const [disableButton, setDisableButton] = useState(false); // initializing state to keep track of button status
-    const [submitCount, setSubmitCount] = useState(numOfPlayers); // initializing state to keep track of how many times player form is submitted
-    // side effect that runs on component mount -> any updates to the db will be listened for via firebase onValue module
-    // store db and create ref to it
-    // use onValue to listen for changes within the db and on page load -> whenever changes occur save the players currently within db in state
+    const [players, setPlayers] = useState([])
+    const [nameInput, setNameInput] = useState('')
+    const [disableButton, setDisableButton] = useState(false)
+    const [submitCount, setSubmitCount] = useState(numOfPlayers)
+
     useEffect(() => {
         const database = getDatabase(firebase);
         const dbRef = ref(database, `${gameKey}`);
@@ -25,13 +23,13 @@ const UserChoice = ({ numOfPlayers, gameKey, handlePlayerError }) => {
             }
             setPlayers(arrayOfPlayers);
         })
+        //eslint-disable-next-line
     }, [])
 
-    // function that looks for change within the name input
     const handleChange = (event) => {
         setNameInput(event.target.value);
     }
-    // function that handles the submit function of the form -> references to the db and creates an object within db with users name and an avatar to go with it
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const database = getDatabase(firebase);
@@ -53,7 +51,7 @@ const UserChoice = ({ numOfPlayers, gameKey, handlePlayerError }) => {
         }
         setNameInput("");
     }
-    //function that deletes a player from the game and removes it from firebase
+
     const deletePlayer = (playerId) => {
         const database = getDatabase(firebase);
         const dbRef = ref(database, `${gameKey}/${playerId}`);
@@ -87,7 +85,6 @@ const UserChoice = ({ numOfPlayers, gameKey, handlePlayerError }) => {
                     })
                 }
             </ul>
-
         </>
     )
 }

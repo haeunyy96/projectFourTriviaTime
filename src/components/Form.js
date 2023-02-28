@@ -6,40 +6,40 @@ import { ref, getDatabase, remove, push, get } from 'firebase/database'
 
 const Form = () => {
 
-    const [numberOfPlayers, setNumberOfPlayers] = useState(''); // initailizing state to house how many players are playing
+    const [numberOfPlayers, setNumberOfPlayers] = useState('')
     const [numberOfQuestions, setNumberOfQuestions] = useState(3)
-    const [quizCategories, setQuizCategories] = useState([]); // initialized state to hold the list of categories from the api
-    const [userCategorySelection, setUserCategorySelection] = useState(0); // initialized state to hold the user choice for user choice which is identified by a number returned from the api
-    const [triviaQuestions, setTriviaQuestions] = useState([]); // initialized state to hold returned trivia questions including choices + correct answer --> use this to go through choices to push to an array
-    const [gameKey, setGameKey] = useState(''); // init state to hold game session key
-    const [isVisible, setIsVisible] = useState(false);
-    const [show, setShow] = useState(false);
-    const [showInstruction, setShowInstruction] = useState(true);
-    const [disableButton, setDisableButton] = useState(false); // initializing state to keep track of button status
+    const [quizCategories, setQuizCategories] = useState([])
+    const [userCategorySelection, setUserCategorySelection] = useState(0)
+    const [triviaQuestions, setTriviaQuestions] = useState([])
+    const [gameKey, setGameKey] = useState('')
+    const [isVisible, setIsVisible] = useState(false)
+    const [show, setShow] = useState(false)
+    const [showInstruction, setShowInstruction] = useState(true)
+    const [disableButton, setDisableButton] = useState(false)
     const [playerErrorCheck, setPlayerErrorCheck] = useState('')
     const [errorMessages, setErrorMessages] = useState('')
     const [timer, setTimer] = useState(30)
+
     const errors = {
         players: 'Please enter the amount of players and enter your name',
         categories: 'Please select a category',
         questions: 'Please enter the number of questions you would like (between 3 and 12)'
     }
 
-    const handlePlayerChange = (event) => { // function for seeing player change 
+    const handlePlayerChange = (event) => {
         setNumberOfPlayers(event.target.value);
     }
-    const handleNumberOfPlayersSubmit = (event) => { // function to check if visibilty of userChoice component
+    const handleNumberOfPlayersSubmit = (event) => {
         event.preventDefault();
         setIsVisible(!isVisible);
     }
-    const handleCategoryChange = (event) => { // function for checking the cateogry of which the player has chosen
+    const handleCategoryChange = (event) => {
         setUserCategorySelection(event.target.value)
     }
     const handleNumberOfQuestions = (event) => {
         setNumberOfQuestions(event.target.value)
     }
 
-    //api call to populate drop down options for categories in for
     useEffect(() => {
         const url = new URL('https://opentdb.com/api_category.php')
         fetch(url)
@@ -51,7 +51,6 @@ const Form = () => {
             })
     }, [])
 
-    //api call to fetch quiz question data based on user category selection
     useEffect(() => {
         const url = new URL('https://opentdb.com/api.php')
         url.search = new URLSearchParams({
@@ -66,13 +65,11 @@ const Form = () => {
             .then((data) => {
                 setTriviaQuestions(data.results)
             })
-    }, [userCategorySelection])
+    }, [userCategorySelection, numberOfQuestions])
 
-    //trivia questions get saved to state and then passed down - I feel like we should shuffle them here...
-    //
     const navigate = useNavigate()
 
-    const goToQuestions = (e) => { // function to reroute to questions component while also passing state via navigate
+    const goToQuestions = (e) => { 
         e.preventDefault()
         if (numberOfPlayers === playerErrorCheck && userCategorySelection !== 0){
             navigate("/questions", { state: { triviaQuestions: triviaQuestions, gameKey: gameKey, timer: timer, numberOfPlayers: numberOfPlayers, numberOfQuestions: numberOfQuestions } })
@@ -90,7 +87,6 @@ const Form = () => {
         const gameId = ''
         const playerObject = push(dbRef, gameId)
         setGameKey(playerObject.key);
-        // use playerObject.key.[player1, player2, player etc..] to add player info to the game session object in firebase
         setShow(!show);
         setShowInstruction(!showInstruction);
         setDisableButton(true);
@@ -100,21 +96,7 @@ const Form = () => {
     const handleTimerChange = (event) => {
         setTimer(event.target.value)
     }
-
-    const deleteAllGames = () => {
-        const database = getDatabase(firebase);
-        const dbRef = ref(database);
-        get(dbRef).then((snapshot) => {
-            if (snapshot.exists()) {
-                const gameObject = snapshot.val()
-                for (const game in gameObject) {
-                    const gameRef = ref(database, game)
-                    remove(gameRef)
-                }
-            }
-        })
-    }
-
+    
     const handlePlayerError = (num) => {
         setPlayerErrorCheck(`${num}`)
     }
@@ -127,7 +109,8 @@ const Form = () => {
         } else if (selection === 'questions'){
             return <p className="error">{errors.questions}</p>
         }
-    };
+    }
+
     return (
         <section>
             {
@@ -137,7 +120,7 @@ const Form = () => {
                 <ul className="formDiv">
                     <li className="instructionTitle">How to play:</li>
                     <li className="instructionList">1. Choose the <strong>number of players 👥</strong> and <strong>add your names!</strong></li>
-                    <li className="instructionList">2. Choose a <strong>quiz category</strong> and select the <strong>level of difficulty 😬</strong></li>
+                    <li className="instructionList">2. Choose a <strong>quiz category</strong>, <strong>number of questions</strong> and the <strong>level of difficulty 😬</strong></li>
                     <li className="instructionList">3. Each person will get <strong>3 questions</strong> based on the chosen category</li>
                     <li className="instructionList">4. The <strong>timer</strong> will run for <strong>15, 30 or 60 seconds</strong> based on the chosen level of difficulty</li>
                     <li className="instructionList">5. At the end of the game, the <strong>🏆 WINNER 🏆</strong> will be announced!</li>
@@ -222,7 +205,6 @@ const Form = () => {
                             </Link>
                             {errorMessage(errorMessages)}
                         </div>
-                            <button onClick={()=> deleteAllGames()}>Delete All Games</button>
                         </div>
                     : null
             }

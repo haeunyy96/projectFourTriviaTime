@@ -28,7 +28,6 @@ const Leaderboard = () => {
         })
     }, [])
 
-    //find highest scores by creating an array of the scores stored in playersData array and then use Math.max to find the highest score in this array and save it to a variable
     const arrayOfScores = playersData.map((player) => {
         return(
             player.playerInfo.score
@@ -37,13 +36,10 @@ const Leaderboard = () => {
 
     const highestScore = Math.max(...arrayOfScores)
 
-    //sort players in descending order by score
     let sortedScores = playersData.sort(
         (a, b) => (a.playerInfo.score < b.playerInfo.score) ? 1 : (a.playerInfo.score > b.playerInfo.score) ? -1 : 0);
     
-
-    //inside component return, map through sortedScores, if player.playerInfo.score === highestScore, add className='winner' to the li that's returned else add className 'loser'
-    return (
+        return (
         <section className="leaderboard">
             <h2>🏆 Leaderboard 🏆</h2>
             <ul className="leaderboardContent">
