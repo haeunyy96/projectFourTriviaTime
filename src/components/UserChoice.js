@@ -25,6 +25,7 @@ const UserChoice = ({ numOfPlayers, gameKey, handlePlayerError }) => {
             }
             setPlayers(arrayOfPlayers);
         })
+        //eslint-disable-next-line
     }, [])
 
     // function that looks for change within the name input

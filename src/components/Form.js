@@ -66,7 +66,7 @@ const Form = () => {
             .then((data) => {
                 setTriviaQuestions(data.results)
             })
-    }, [userCategorySelection])
+    }, [userCategorySelection, numberOfQuestions])
 
     //trivia questions get saved to state and then passed down - I feel like we should shuffle them here...
     //
