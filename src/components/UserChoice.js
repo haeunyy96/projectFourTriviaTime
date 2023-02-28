@@ -69,7 +69,7 @@ const UserChoice = ({ numOfPlayers, gameKey, handlePlayerError }) => {
             <form action="" onSubmit={handleSubmit}>
                 <label htmlFor="nameInput">Player Name: </label>
                 <input type="text" id="nameInput" name="nameInput" onChange={handleChange} value={nameInput} placeholder="Enter your name here." />
-                <button required disabled={disableButton} onClick={handlePlayerError(players.length)}>Add Player Name</button>
+                <button required disabled={disableButton} onClick={()=>handlePlayerError(players.length + 1)}>Add Player Name</button>
             </form>
             <p className="remainingPlayers">Remaining # of Players to Add: {submitCount}</p>
             <ul className="listOfPlayers">
