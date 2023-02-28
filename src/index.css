@@ -79,9 +79,11 @@ input {
   border-radius: 5px;
   padding: 4px 5px;
   margin-right: 10px;
-  /* width: 60%; */
 }
 
+#quantity {
+  width: 70%;
+}
 footer {
   /* position: fixed;
   bottom: 0; */
@@ -107,9 +109,9 @@ button:focus {
   transition: 300ms;
 }
 
-h3 {
+/* h3 {
   margin-right: 15px;
-}
+} */
 
 .formDiv {
   border: 10px solid #86C2AE;
@@ -246,8 +248,11 @@ h3 {
 
 .leaderboard h2 {
   font-family: 'Caveat Brush', sans-serif;
+  display: inline-block;
+  background: linear-gradient(180deg,rgba(255, 255, 255, 0) 60%, rgba(240, 145, 122, 0.3) 60%);
   font-size: 2.5rem;
   color: #F0917A;
+  margin: 25px 0 20px 0;
 }
 
 .leaderboardContent {
@@ -255,8 +260,67 @@ h3 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-color: rgba(240,145,122, 0.5);
+  width: 80%;
+  margin: auto;
+  border-radius: 10px;
+  border: 10px solid #F0917A;
+  padding: 20px 0;
 }
 
+.leaderboardContent li {
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.playerScoreAvatar {
+  width: 30%;
+}
+
+.playerScoreInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+}
+
+.playerNameScore {
+  display: flex;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  padding: 5px 18px;
+  margin-top: 10px;
+}
+
+.playerNameScore h4,
+.playerNameScore h5 {
+  font-size: 1.4rem;
+  display: block;
+  margin: 5px;
+}
+
+.winner {
+  background-color: #F0917A;
+  color: white;
+  width: 70%;
+}
+
+.loser {
+  background-color: rgba(240, 145, 122, 0.5);
+  width: 50%;
+}
+
+.winner h3 {
+  font-size: 2.5rem;
+}
+
+.loser h3 {
+  font-size: 1rem;
+}
 /* Instruction CSS */
 
 .instructionTitle {
@@ -297,6 +361,7 @@ h3 {
   .listOfPlayers {
     align-content: center;
   }
+  #quantity,
   #categoryChoice,
   #timerChoice {
     width: 60%;
@@ -308,6 +373,12 @@ h3 {
     height: 5px;
     margin-top: 15px;
   }
+  .winner {
+    width: 80%;
+  }
+  .loser {
+    width: 65%;
+  }
 }
 
 @media (max-width: 630px) {
@@ -315,6 +386,7 @@ h3 {
     padding: 10px;
     width: 90%;
   }
+    #quantity,
     #filtration,
     #categoryChoice,
     #timerChoice {
@@ -335,10 +407,21 @@ h3 {
   .triviaContainer {
     margin: 0 30px;
   }
-
+  .winner,
+  .loser {
+    flex-direction: column;
+  }
+  .winner h3,
+  .loser h3 {
+    margin-top: 10px;
+  }
+  .playerScoreAvatar {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
+  #quantity,
   #filtration, 
   #categoryChoice, 
   #timerChoice {
@@ -356,61 +439,10 @@ h3 {
   .questionsPlayerInfo {
     width: 80%;
   }
+  .leaderboardContent {
+    padding: 10px 0;
+  }
+  .loser {
+    width: 80%;
+  }
 }
-.leaderboardContent li {
-  border: 3px solid #577F90;
-  border-radius: 5px;
-  padding: 10px;
-  margin: 10px;
-  width: 50%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.playerScoreAvatar {
-  width: calc(40% - 50px);
-  margin-right: 25px;
-}
-
-.playerScoreInfo {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: calc(60% - 50px);
-  margin-left: 25px;
-}
-
-.playerNameScore {
-  display: flex;
-  border: 3px solid #86C2AE;
-  border-radius: 10px;
-  padding: 5px 25px;
-  margin-top: 10px;
-}
-
-.playerNameScore h4, 
-.playerNameScore h5 {
-  font-size: 1.75rem;
-  display: block;
-  margin: 5px;
-}
-
-.winner {
-  background-color: #577F90;
-  color: white;
-}
-
-.winner .playerScoreAvatar {
-  border: 3px solid #86C2AE;
-}
-
-.winner h3 {
-  font-size: 2.5rem;
-}
-
-.loser h3 {
-  font-size: 1rem;
-}
-

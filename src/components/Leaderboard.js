@@ -45,7 +45,7 @@ const Leaderboard = () => {
     //inside component return, map through sortedScores, if player.playerInfo.score === highestScore, add className='winner' to the li that's returned else add className 'loser'
     return (
         <section className="leaderboard">
-            <h2>Leader Board</h2>
+            <h2>🏆 Leaderboard 🏆</h2>
             <ul className="leaderboardContent">
                 {
                     sortedScores.map((player) => {
@@ -56,7 +56,7 @@ const Leaderboard = () => {
                                     <img src={player.playerInfo.avatar} alt={`Trivia winner's avatar`} />
                                 </div>
                                 <div className="playerScoreInfo">
-                                    <h3>Winner!</h3>
+                                    <h3>WINNER!</h3>
                                     <div className="playerNameScore">
                                         <h4>{player.playerInfo.playerName}:</h4>
                                         <h5>{player.playerInfo.score}/{numberOfQuestions}</h5>
