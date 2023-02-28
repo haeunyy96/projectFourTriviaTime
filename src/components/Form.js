@@ -78,7 +78,7 @@ const Form = () => {
         e.preventDefault()
         if (numberOfPlayers === playerErrorCheck && userCategorySelection !== 0){
             navigate("/questions", { state: { triviaQuestions: triviaQuestions, gameKey: gameKey, timer: timer, numberOfPlayers: numberOfPlayers, numberOfQuestions: numberOfQuestions } })
-        } else if (numberOfPlayers === '' || playerErrorCheck != numberOfPlayers) {
+        } else if (numberOfPlayers === '' || playerErrorCheck !== numberOfPlayers) {
             setErrorMessages('players')
         } else if (userCategorySelection === 0){
             setErrorMessages('categories')
@@ -192,8 +192,20 @@ const Form = () => {
                                             })
                                         }
                                     </select>
-                                    <label htmlFor="quantity">Choose number of questions (between 3 and 12):</label>
-                                    <input type="number" id="quantity" name="quantity" min="3" max="12" placeholder="Select number" onChange={handleNumberOfQuestions}></input>
+                                    <label htmlFor="quantity">Choose number of questions per player</label>
+                                    <select id="quantity" name="quantity" defaultValue={"placeholder"}  onChange={handleNumberOfQuestions}>
+                                        <option value="placeholder" disabled>Select number</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                    </select>
                                 </form>
                                 <form action="">
                                     <label htmlFor="timerChoice">Choose the Level of Difficulty</label>
