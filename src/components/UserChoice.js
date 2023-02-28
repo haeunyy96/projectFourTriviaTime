@@ -42,7 +42,6 @@ const UserChoice = ({ numOfPlayers, gameKey, handlePlayerError }) => {
                 score: 0,
                 questions: ['']
             }
-
         if (nameInput !== '' && isNaN(nameInput)) {
             push(dbRef, playerInfo);
             setSubmitCount(submitCount - 1);
